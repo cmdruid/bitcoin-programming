@@ -1,12 +1,6 @@
 # bitcoin-programming-course
 A educational course on programming with bitcoin and the blockchain.
 
-## Arguments against POW
-
-### ASICS
-
-Specialized (ASIC) hardware can't be used for anything else, unlike CPU's which a government could have a large supply off that normally does other things.
-
 ## Resources
 
 **Bitcoin: A Peer-to-Peer Electronic Cash System**  
@@ -29,7 +23,7 @@ https://bitcoin.org/en/resources
 A wiki page dedicated to Bitcoin information.  
 https://en.bitcoin.it  
 
-### Repositories
+## Repositories
 
 **Bitcoin Core**  
 The Bitcoin Core reference client, written in C++.  
@@ -43,7 +37,7 @@ https://github.com/btcsuite/btcd
 Javascript bitcoin library for node.js and browsers.  
 https://github.com/bcoin-org/bcoin  
 
-### Running a Node
+## Running a Node
 
 **Bitcoin Core Config Generator**  
 Create and explore the many available options of a Bitcoin config file.  
@@ -57,13 +51,13 @@ https://bitcoindev.network/understanding-the-data
 A tutorial for working with Bitcoin (and Lightning).  
 https://github.com/BlockchainCommons/Learning-Bitcoin-from-the-Command-Line  
 
-### Cryptography Demos
+## Cryptography Demos
 
 **SHA-256 in Javascript**  
 An example implementation of the SHA-256 hashing algorithm.  
 https://www.movable-type.co.uk/scripts/sha256.html  
 
-### Tools
+## Tools
 
 **Blockstream Explorer**  
 Block explorer web interface based on the esplora API.  
@@ -73,7 +67,7 @@ https://blockstream.info
 Web-based tool for generating rpcauth strings for bitcoin.conf.  
 https://jlopp.github.io/bitcoin-core-rpc-auth-generator  
 
-### Statistics
+## Statistics
 
 **Mempool.space**  
 Very pretty and informative blockchain explorer.  
@@ -88,19 +82,17 @@ Explore the Bitcoin peer-to-peer network and all of its reachable nodes.
 https://bitnodes.io  
 
 ## APIs
-Esplora API
-
+**Esplora API**  
 https://github.com/Blockstream/esplora/blob/master/API.md
 
-
-
-Blockhooks
-
+**Blockhooks**  
+Zaprite
 ## Useful Libraries
 
-Javascript
+bitcoinjs
+noble-secp256k1
 
-### Lectures / Tutorials
+## Lectures / Tutorials
 **MIT MAS.S62 Cryptocurrency Engineering and Design, Spring 2018**  
 https://www.youtube.com/playlist?list=PLUl4u3cNGP61KHzhg3JIJdK08JLSlcLId  
 
