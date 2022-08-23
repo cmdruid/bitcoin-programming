@@ -15,6 +15,10 @@
 - Setup and install Bitcoin core as homework?
 - hash functions, key pairs, digital signatures.
 
+## QUESTIONS (to class):
+
+- What are other examples of digital currency? Who is the controller / issuer?
+
 ## OUTLINE:
 
 + Warm-up and introduction.
