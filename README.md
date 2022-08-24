@@ -39,6 +39,10 @@ https://github.com/bcoin-org/bcoin
 
 ## Running a Node
 
+**Bitcoin Full-Node Guide**  
+A comprehensive guide on installing and setting up Bitcoin Core.  
+https://bitcoin.org/en/full-node  
+
 **Bitcoin Core Config Generator**  
 Create and explore the many available options of a Bitcoin config file.  
 https://jlopp.github.io/bitcoin-core-config-generator
@@ -55,48 +59,67 @@ https://bitcoindev.network/understanding-the-data
 A tutorial for working with Bitcoin (and Lightning).  
 https://github.com/BlockchainCommons/Learning-Bitcoin-from-the-Command-Line  
 
+## Bitcoin RPC Interface
+
+**Standard RPC API Documentation**  
+List of available RPC commands, with documentation.  
+https://developer.bitcoin.org/reference/rpc  
+
+**JSON-RPC API Reference Wiki**  
+Plethora of resources and code examples for communicating with JSON-RPC.  
+https://en.bitcoin.it/wiki/API_reference_(JSON-RPC)  
+
 ## Cryptography Demos
 
 **SHA-256 in Javascript**  
 An example implementation of the SHA-256 hashing algorithm.  
 https://www.movable-type.co.uk/scripts/sha256.html  
 
-## Tools
+## Explorers
+
+**Mempool.space**  
+Very pretty and informative blockchain explorer.  
+https://mempool.space  
 
 **Blockstream Explorer**  
 Block explorer web interface based on the esplora API.  
 https://blockstream.info  
 
-**RPC Auth Config Generator**  
-Web-based tool for generating rpcauth strings for bitcoin.conf.  
-https://jlopp.github.io/bitcoin-core-rpc-auth-generator  
+**Bitnodes.io**  
+Explore the Bitcoin peer-to-peer network and all of its reachable nodes.  
+https://bitnodes.io  
 
 ## Statistics
-
-**Mempool.space**  
-Very pretty and informative blockchain explorer.  
-https://mempool.space
 
 **Statoshi.info**  
 Grafana-based stats of the Bitcoin blockchain.  
 https://statoshi.info
 
-**Bitnodes.io**  
-Explore the Bitcoin peer-to-peer network and all of its reachable nodes.  
-https://bitnodes.io  
-
 ## APIs
-**Esplora API**  
-https://github.com/Blockstream/esplora/blob/master/API.md
 
-**Blockhooks**  
-Zaprite
+**Esplora API**  
+The blockstream.info public RESTful API.
+https://github.com/Blockstream/esplora/blob/master/API.md  
+
+**Blockhooks.io**  
+Dead simple bitcoin transaction notifications.  
+https://blockhooks.io  
+
 ## Useful Libraries
 
-bitcoinjs
-noble-secp256k1
+**Bitcoin-core JS**  
+Javascript library that connects to Bitcoin Core's RPC interface.  
+https://github.com/ruimarinho/bitcoin-core  
+
+**Bitcoinjs-lib**  
+Javascript library and toolkit with an extensive feature-set.  
+
+**noble-secp256k1**  
+Elliptic-curve library that supports deterministic ECDSA and Schnorr signatures.  
+https://github.com/paulmillr/noble-secp256k1  
 
 ## Lectures / Tutorials
+
 **MIT MAS.S62 Cryptocurrency Engineering and Design, Spring 2018**  
 https://www.youtube.com/playlist?list=PLUl4u3cNGP61KHzhg3JIJdK08JLSlcLId  
 
@@ -123,3 +146,13 @@ https://github.com/jimmysong/programmingbitcoin
 **Bitcoin Optech Newsletter**  
 Weekly tech newsletter that discusses active topics within Bitcoin development.  
 https://bitcoinops.org  
+
+**Bitcointalk Forums**  
+Original Bitcoin discussion forum, founded by Theymos and Satoshi Nakamoto.  
+https://bitcointalk.org  
+
+## Other
+
+**Satoshi's Bitcointalk Profile**  
+FYI You may need an account to view this page.  
+https://bitcointalk.org/index.php?action=profile;u=3  
