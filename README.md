@@ -79,6 +79,10 @@ https://en.bitcoin.it/wiki/API_reference_(JSON-RPC)
 An example implementation of the SHA-256 hashing algorithm.  
 https://www.movable-type.co.uk/scripts/sha256.html  
 
+**SHA-256 Visualization**  
+A visual representation of how SHA256 mixes data.  
+https://sha256algorithm.com  
+
 ## Explorers
 
 **Mempool.space**  
