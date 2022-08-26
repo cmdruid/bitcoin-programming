@@ -1,5 +1,7 @@
 #!/usr/bin/env -S node --experimental-modules --no-warnings
 
+const { webcrypto: crypto } = require('crypto')
+
 async function bitcoinCli(method, ...args) {
   const user = 'bitcoin',
         pass = 'password',

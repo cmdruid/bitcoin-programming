@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
+
 ## https://requests.readthedocs.io
-import json, requests
+import json, requests, uuid
 
 def json_rpc(method, **params):
 
-  print(params)
+  print("Params: {}".format(params))
 
   username = 'bitcoin'
   password = 'password'
@@ -11,7 +13,7 @@ def json_rpc(method, **params):
 
   body = json.dumps({
     "jsonrpc": "1.0",
-    "id":"test",
+    "id": uuid.uuid4().urn.split(':')[-1],
     "method": str(method),
     "params": [ p for p in params ]
   })
@@ -26,4 +28,4 @@ def json_rpc(method, **params):
 
 result = json_rpc('getblockchaininfo')
 
-print(result)
+print(json.dumps(result, indent=2))
