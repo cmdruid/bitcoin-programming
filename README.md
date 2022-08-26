@@ -43,6 +43,10 @@ https://github.com/bcoin-org/bcoin
 A comprehensive guide on installing and setting up Bitcoin Core.  
 https://bitcoin.org/en/full-node  
 
+**Download Bitcoin Core**  
+Downloads are available for many platforms.  
+https://bitcoin.org/en/download  
+
 **Bitcoin Core Config Generator**  
 Create and explore the many available options of a Bitcoin config file.  
 https://jlopp.github.io/bitcoin-core-config-generator
@@ -156,3 +160,6 @@ https://bitcointalk.org
 **Satoshi's Bitcointalk Profile**  
 FYI You may need an account to view this page.  
 https://bitcointalk.org/index.php?action=profile;u=3  
+
+**Clark Moody's Bitcoin Dashboard**  
+https://bitcoin.clarkmoody.com/dashboard  
