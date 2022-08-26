@@ -1,5 +1,5 @@
-# bitcoin-programming-course
-An educational course on programming with bitcoin and the blockchain.
+# bitcoin-programming
+An educational repository on programming with Bitcoin.
 
 ## Resources
 
