@@ -155,6 +155,9 @@ https://bitcoinops.org
 Original Bitcoin discussion forum, founded by Theymos and Satoshi Nakamoto.  
 https://bitcointalk.org  
 
+**Bitcoin Developer's Mailing List**  
+https://lists.linuxfoundation.org/mailman/listinfo/bitcoin-dev
+
 ## Other
 
 **Satoshi's Bitcointalk Profile**  
