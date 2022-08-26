@@ -3,8 +3,9 @@
 async function bitcoinCli(method, ...args) {
   const user = 'bitcoin',
         pass = 'password',
-          url = '127.0.0.1',
-        port = 18443
+        url  = '127.0.0.1',
+        port = 18443,
+        uuid = crypto.randomUUID()
 
   console.log('Arguments:', args)
 
@@ -15,8 +16,8 @@ async function bitcoinCli(method, ...args) {
       'content-type': 'application/json'
     },
     body: JSON.stringify({
-      "jsonrpc": "1.0", 
-      "id":"test", 
+      "jsonrpc": "1.0",
+      "id": uuid,
       "method": method, 
       "params": [ ...args ]
     })
