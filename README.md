@@ -105,7 +105,10 @@ https://bitnodes.io
 
 **Statoshi.info**  
 Grafana-based stats of the Bitcoin blockchain.  
-https://statoshi.info
+https://statoshi.info  
+
+**Clark Moody's Bitcoin Dashboard**  
+https://bitcoin.clarkmoody.com/dashboard  
 
 ## APIs
 
@@ -137,6 +140,7 @@ https://www.youtube.com/playlist?list=PLUl4u3cNGP61KHzhg3JIJdK08JLSlcLId
 
 **MIT 15.S12 Blockchain and Money, Fall 2018**  
 https://www.youtube.com/playlist?list=PLUl4u3cNGP63UUkfL0onkxF6MYgVa04Fn  
+
 ## Books
 
 **Mastering Bitcoin**  
@@ -171,6 +175,3 @@ https://lists.linuxfoundation.org/mailman/listinfo/bitcoin-dev
 **Satoshi's Bitcointalk Profile**  
 FYI You may need an account to view this page.  
 https://bitcointalk.org/index.php?action=profile;u=3  
-
-**Clark Moody's Bitcoin Dashboard**  
-https://bitcoin.clarkmoody.com/dashboard  
