@@ -33,12 +33,12 @@ def base58_address(s, ver=111):
     return encode_base58(prefix + s + checksum)
 
 
-def decode_base58(s):
+def decode_base58(s, size=25):
     num = 0
     for c in s:
         num *= 58
         num += ALPHABET.index(c)
-    combined = num.to_bytes(25, byteorder='big')
+    combined = num.to_bytes(size, byteorder='big')
     checksum = combined[-4:]
     if hash256(combined[:-4])[:4] != checksum:
         raise ValueError('bad address: {} {}'.format(

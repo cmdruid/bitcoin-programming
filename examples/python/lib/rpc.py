@@ -59,3 +59,8 @@ def loadWallet(walletName):
     raise 'Wallet failed to load cleanly: {}'.format(wallet['warning'])
   
   return True
+
+
+def check_rpc():
+  res = rpc('getblockchaininfo')
+  return 'chain' in res

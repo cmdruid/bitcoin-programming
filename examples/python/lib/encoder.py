@@ -97,7 +97,7 @@ def encode_script(script, prepend_len=True):
             # Adjust word formatting if needed.
             word = format_word(word)
             if type(word) != int:
-               # Append current word as a variable.
+                # Append current word as a variable.
                 raw += word_size(word)
                 raw += word         
             else:
@@ -207,9 +207,10 @@ def encode_sighash(obj, txin_idx, txin_value, **kwargs):
     # Append the sighash flag.
     flag = get_sigflag(sighash)
     if anypay:
-      flag += 0x80
+        flag += 0x80
     raw += flag.to_bytes(4, 'little')
 
+    # Hash256 the raw string, then return the result.
     return hash256(raw).hex()
 
 def format_word(word):
@@ -223,30 +224,30 @@ def format_word(word):
     elif type(word) in [int, bytes]:
         return word
     else:
-      raise Exception(f'Invalid word type: "{word}" = {type(word)}')
+        raise Exception(f'Invalid word type: "{word}" = {type(word)}')
 
 
 def word_size(word):
-  ''' Get the length of a word, and return
-     its varint size in byte-string format. 
-  '''
-  MAX_SIZE = 0x208
-  word_size = len(word)
-  if word_size <= 0x4b:
-      # Encode the current word size.
-      return word_size.to_bytes(1, 'little')
-  elif 0x4b < word_size < 0x100:
-      # Encode the word size as a varint byte.
-      op_datapush1 = int(0x4c).to_bytes(1, 'little')
-      return op_datapush1 + word_size.to_bytes(1, 'little')
-  elif 0x100 <= word_size <= MAX_SIZE:
-      # Encode the word size as two varint bytes.
-      op_datapush2 = int(0x4d).to_bytes(1, 'little')
-      return op_datapush2 + word_size.to_bytes(2, 'little')
-  else:
-      raise ValueError(
-        f'Word "{word}" is too large: {word_size} > {MAX_SIZE} bytes.'
-      )
+    ''' Get the length of a word, and return
+        its varint size in byte-string format. 
+    '''
+    MAX_SIZE = 0x208
+    word_size = len(word)
+    if word_size <= 0x4b:
+        # Encode the current word size.
+        return word_size.to_bytes(1, 'little')
+    elif 0x4b < word_size < 0x100:
+        # Encode the word size as a varint byte.
+        op_datapush1 = int(0x4c).to_bytes(1, 'little')
+        return op_datapush1 + word_size.to_bytes(1, 'little')
+    elif 0x100 <= word_size <= MAX_SIZE:
+        # Encode the word size as two varint bytes.
+        op_datapush2 = int(0x4d).to_bytes(1, 'little')
+        return op_datapush2 + word_size.to_bytes(2, 'little')
+    else:
+        raise ValueError(
+            f'Word "{word}" is too large: {word_size} > {MAX_SIZE} bytes.'
+        )
 
 
 def write_varint(num):

@@ -1,7 +1,7 @@
 SIGHASH_MAP = {
-    0x41: 'ALL',
-    0x42: 'NONE',
-    0x43: 'SINGLE',
+    0x01: 'ALL',
+    0x02: 'NONE',
+    0x03: 'SINGLE',
 }
 
 OPCODE_MAP = {
@@ -99,7 +99,7 @@ OPCODE_MAP = {
 
 def get_opname(num):
     return OPCODE_MAP[num]
-  
+
 def get_opcode(string):
     return next((k for k,v in OPCODE_MAP.items() if v == string), None)
 

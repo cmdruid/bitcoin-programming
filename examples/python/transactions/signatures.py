@@ -2,41 +2,46 @@
 
 from sys import path
 from base64 import b64decode
+import json
 
 path.append( '.' )
 path.append( '..' )
 
-## Requires libsecp256k1-0 package.
-# https://github.com/ArcticTechnology/libsecp256k1-0
-#from libsecp256k1_0 import 
+## Requires secp256k1 package.
+# pip3 install secp256k1
+# https://https://pypi.org/project/secp256k1
+from secp256k1 import PrivateKey
 
 from lib.hash import hash160
 from lib.encoder import encode_tx, encode_script, encode_sighash
 from lib.helper import encode_address, decode_address, hash_script, get_txid
-from lib.rpc import rpc
+from lib.rpc import rpc, check_rpc
 
-WALLET_NAME = 'test'
+opt = { 'wallet': 'regtest' }
 
-## Update this information to use one of your existing unspent 
-## transaction outputs (utxo). See 'listunspents' for more info.
+## Check that our RPC connection is working.
+assert check_rpc()
 
 ## Get an unspent output from our utxo set.
-utxo = rpc('listunspent', wallet=WALLET_NAME)[0]
+utxo_set = rpc('listunspent', **opt)
+if not len(utxo_set):
+    raise Exception('Your utxo set is empty! Try mining some blocks.')
+utxo = utxo_set[0]
+print(f'Using utxo:\n{json.dumps(utxo, indent=2)}')
 
-## Use our wallet to fetch a legacy address and pubkey.
-legacy_address = rpc('getnewaddress', ['-format', 'legacy'], wallet=WALLET_NAME)
-address_info = rpc('getaddressinfo', legacy_address, wallet=WALLET_NAME)
-
-pubkey = address_info['pubkey']
-pubkey_hash = hash160(pubkey).hex()
+## Decode the keypair from the utxo
+encoded_key = rpc('dumpprivkey', utxo['address'], **opt)
+private_key = decode_address(encoded_key)
+public_key  = rpc('getaddressinfo', utxo['address'], **opt)['pubkey']
+pubkey_hash = hash160(public_key).hex()
 
 ## Convert utxo value to the correct amount in satoshis.
+tx_fee = 1000
 utxo_value = int(utxo['amount'] * 100000000)
 
-## The initial spending transaction. This tx spends a previous utxo,
-## and commits the funds to our P2WPKH transaction.
-
-locking_tx = {
+## The spending transaction. This tx spends a previous utxo,
+## signed using our extrated private key.
+spending_tx = {
     'version':1,
     'vin': [{
         'txid': utxo['txid'],
@@ -45,54 +50,43 @@ locking_tx = {
         'sequence': 0xFFFFFFFF
     }],
     'vout': [{
-        'value': utxo_value - 1000,
+        'value': utxo_value - tx_fee,
         'script_pubkey': [ 0, pubkey_hash ]
     }],
     'locktime':0
 }
 
-## Get raw hex of the transaction.
-locking_raw = encode_tx(locking_tx)
+## Convert the private key into a signing key.
+sign_key = PrivateKey(bytes(bytearray.fromhex(private_key)), raw=True)
 
-## Since we have the complete transaction, we can calculate the transaction ID.
-locking_txid = get_txid(locking_raw)
-
-spending_tx = {
-    'version':1,
-    'vin': [{
-        'txid': locking_txid,
-        'vout': 0,
-        'script_sig': [],
-        'sequence': 0xFFFFFFFF,
-    }],
-    'vout': [{
-        'value': utxo_value - 2000,
-        'script_pubkey': [ 0, pubkey_hash ]
-    }],
-    'locktime':0
-}
-
-## Get a message digest of the transaction.
+## Calculate a message digest for us to sign.
 redeem_script = f'1976a914{pubkey_hash}88ac'
-msg_digest = encode_sighash(spending_tx, 0, utxo_value - 1000, redeem_script=redeem_script)
+msg_digest = encode_sighash(spending_tx, 0, utxo_value, redeem_script=redeem_script)
 
-## Get a signature of the digest using the address.
-b64_sig = rpc('signmessage', [legacy_address, msg_digest], wallet=WALLET_NAME)
-signature = b64decode(b64_sig).hex()
+## Sign the message digest.
+sig_bytes = sign_key.ecdsa_sign(bytes(bytearray.fromhex(msg_digest)), raw=True)
+signature = sign_key.ecdsa_serialize(sig_bytes).hex() + '01'
 
 ## Apply signature and public key to witness data
-#spending_tx['vin'][0]['witness'] = [ signature, pubkey ]
+spending_tx['vin'][0]['witness'] = [ signature, public_key ]
 
-## Get raw hex of the transaction.
+## Get raw hex and id of the transaction.
 spending_raw = encode_tx(spending_tx)
+spending_txid = get_txid(spending_raw)
 
 print(f'''
-Locking Transaction ID:
-{locking_txid}
+Private Key:
+{private_key}
 
-Locking Transaction Hex:
-{locking_raw}
+Public Key:
+{public_key}
 
-Spending Transaction Hex:
+Signature:
+{signature}
+
+Transaction ID:
+{spending_txid}
+
+Transaction Hex:
 {spending_raw}
 ''')

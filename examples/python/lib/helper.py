@@ -40,7 +40,10 @@ def decode_address(address):
     ''' Decodes a Bitcoin address or key into hex format.
     '''
     if address[0] in [1, 2, 3, 'm', 'n', 'M', 'N']:
-       return decode_base58(address).hex()
+        return decode_base58(address, size=25).hex()
+    if address[0] in ['c', 'L', 'K']:
+        decoded = decode_base58(address, size=38)
+        return decoded[0:32].hex()
     elif address[0:2] in ['bc', 'tb']:
         hrp, _ = address.split('1', 1)
         ver, prog = decode(hrp, address)
@@ -48,3 +51,9 @@ def decode_address(address):
         return [ ver, prog ]
     else:
         raise Exception(f'Unknown format: {address}')
+
+
+def convert_to_wif(key, testnet=True):
+    ver = 0x80 if not testnet else 0xEF
+    raw = get_bytes(key + '01')
+    return base58_address(raw, ver=ver)
