@@ -20,6 +20,10 @@ picked up by your wallet automatically, and listed as a new
 utxo under 'listunspent' once you generate another block.
 """
 
+from sys import path
+
+path.append( '..' )
+
 from lib.encoder import encode_tx, encode_script
 
 from lib.helper import (

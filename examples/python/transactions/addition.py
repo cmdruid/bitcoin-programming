@@ -2,6 +2,10 @@
 Example of a Pay-to-Witness-Script-Hash using basic addition.
 """
 
+from sys import path
+
+path.append( '..' )
+
 from lib.encoder import encode_tx, encode_script
 
 from lib.helper import (
@@ -79,8 +83,7 @@ spending_tx = encode_tx({
     'locktime':0
 })
 
-def addition_example():
-    print(f'''
+print(f'''
 # Pay-to-Witness-Script-Hash Example using addition
 
 Locking Txid:

@@ -48,6 +48,10 @@ within our script, this second transaction does not need to be signed.
 (it is dangerous to lock real coins to a script that doesn't check for signatures)
 """
 
+from sys import path
+
+path.append( '..' )
+
 from lib.encoder import encode_tx, encode_script
 from lib.helper import decode_address, hash_script, get_txid
 

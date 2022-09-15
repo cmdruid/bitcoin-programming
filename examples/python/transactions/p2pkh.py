@@ -18,6 +18,10 @@ You can generate a block in order to commit this transaction
 to the blockchain (if you are using regtest).
 """
 
+from sys import path
+
+path.append( '..' )
+
 from lib.encoder import encode_tx
 from lib.helper import decode_address
 
