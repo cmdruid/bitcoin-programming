@@ -19,12 +19,22 @@ from lib.helper import (
 
 ## Update this information to use one of your existing unspent 
 ## transaction outputs (utxo). See 'listunspents' for more info.
-funding_txid = 'ecd795120b5aa56ebd5ed6c8db7439b5e5e8fb3a6ba254cd702f8adabc9705e8'
+funding_txid = 'e365d909ca5793144122bf381af83210d1a9256aa3a5ac20eba8019aa1a66cd1'
 funding_vout = 0
-funding_value = 5000000000
+funding_value = 2500000000
 
 ## Here is the script that we will be using.
-script_words = ['OP_ADD', 'OP_5', 'OP_EQUAL']
+script_words = [
+    'OP_IF',
+    'OP_HASH160',
+    'e81bfa71da56f187cce1319ee773dabf56988e95',
+    'OP_EQUAL',
+    'OP_ELSE',
+    'OP_HASH160',
+    '0f79cd7e22364ff5ed1c6c381f60b0a53d84be19',
+    'OP_EQUAL',
+    'OP_ENDIF'
+]
 
 ## This is the version number for the witness program 
 ## interpreter. We'll be sticking to version 0.
@@ -61,7 +71,7 @@ locking_tx = encode_tx({
 locking_txid = get_txid(locking_tx)
 
 ## Replace this with your own bech32 address.
-receive_address = 'bcrt1q3xgcc6wtxkzd5s80578cr9v94r7s5jstjl2kd2'
+receive_address = 'bcrt1q66tuvf7tnv3sdj83c3y4wveuqnf8s5rplx3klq'
 
 ## Bech32 addresses will decode into a witness version and pubkey hash.
 witness_version, pubkey_hash = decode_address(receive_address)
@@ -75,7 +85,7 @@ spending_tx = encode_tx({
         'vout': 0,
         'script_sig': [],
         'sequence': 0xFFFFFFFF,
-        'witness': [ '02', '03', witness_script ]
+        'witness': [ 'ab' * 32, '00', witness_script ]
     }],
     'vout': [{
         'value': funding_value - 2000,
