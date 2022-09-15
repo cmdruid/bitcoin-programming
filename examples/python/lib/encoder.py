@@ -1,4 +1,5 @@
-from .codes import get_opcode
+from .hash import hash256
+from .codes import get_opcode, get_sigflag
 
 
 def encode_tx(obj, **kwargs):
@@ -112,6 +113,104 @@ def encode_script(script, prepend_len=True):
         raw = write_varint(len(raw)) + raw
     return raw
 
+def hash_prevouts(inputs, anypay):
+    ''' Combine all input prevout fields,
+        then return a digest.
+    '''
+    if anypay:
+        return b'0' * 32
+    raw_prev = b''
+    for txin in inputs:
+        raw_prev += bytes.fromhex(txin['txid'])[::-1]
+        raw_prev += txin['vout'].to_bytes(4, 'little')
+    return hash256(raw_prev)
+
+
+def hash_sequence(inputs, sighash, anypay):
+    ''' Combine all input sequence fields, 
+        then return a digest. 
+    '''
+    if anypay or sighash in [ 'SINGLE', 'NONE' ]:
+        return b'0' * 32
+    raw_seq = b''
+    for txin in inputs:
+        raw_seq += txin['sequence'].to_bytes(4, 'little')
+    return hash256(raw_seq)
+
+
+def hash_outputs(outputs, sighash, input_idx=None):
+    ''' Combine all output fields,
+        then return a digest.
+    '''
+    raw_out = b''
+    if sighash == 'ALL':
+        for txout in outputs:
+            raw_out += txout['value'].to_bytes(8, 'little')
+            raw_out += encode_script(txout['script_pubkey'])
+        return hash256(raw_out)
+    elif sighash == 'SINGLE' and type(input_idx) == int:
+        if input_idx < len(outputs):
+            txout = outputs[txin_idx]
+            raw_out += txout['value'].to_bytes(8, 'little')
+            raw_out += encode_script(txout['script_pubkey'])
+        return hash256(raw_out)
+    else:
+        return b'0' * 32
+
+
+def encode_sighash(obj, txin_idx, txin_value, **kwargs):
+    ''' Generate the message digest that is used
+        to sign a BIP143 Segwit transaction.
+    '''
+
+    version  = obj.get('version', 1)
+    inputs   = obj.get('vin', [])
+    outputs  = obj.get('vout', [])
+    locktime = obj.get('locktime', 0)
+    sighash  = kwargs.get('sighash', 'ALL')
+    anypay   = kwargs.get('anypay', False)
+    redeem_script = kwargs.get('redeem_script', None)
+
+    # Check if witness data exists in inputs.
+    #has_witness = check_witness(inputs)
+
+    # Encode the transaction version number.
+    raw = encode_version(version)
+
+    # Append a digest of the input 
+    # prevouts and sequence fields.
+    raw += hash_prevouts(inputs, anypay)
+    raw += hash_sequence(inputs, sighash, anypay)
+
+    # Append all information for the
+    # transaction that we are signing.
+    txin = inputs[txin_idx] 
+    raw += bytes.fromhex(txin['txid'])[::-1]
+    raw += txin['vout'].to_bytes(4, 'little')
+
+    # Append the script being used to redeem the funds.
+    if redeem_script:
+        raw += bytes.fromhex(redeem_script)
+    elif 'witness' in txin:
+        raw += encode_script(txin['witness'][-1])
+    else:
+        raise Exception('There is no script to sign!')
+
+    raw += txin_value.to_bytes(8, 'little')
+    raw += txin['sequence'].to_bytes(4, 'little')
+
+    # Append a digest of the outputs,
+    # plus append the locktime.
+    raw += hash_outputs(outputs, sighash, txin_idx)
+    raw += encode_locktime(locktime)
+
+    # Append the sighash flag.
+    flag = get_sigflag(sighash)
+    if anypay:
+      flag += 0x80
+    raw += flag.to_bytes(4, 'little')
+
+    return hash256(raw).hex()
 
 def format_word(word):
     ''' We are type-checking the variable, 

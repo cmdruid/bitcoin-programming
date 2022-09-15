@@ -50,6 +50,7 @@ within our script, this second transaction does not need to be signed.
 
 from sys import path
 
+path.append( '.' )
 path.append( '..' )
 
 from lib.encoder import encode_tx, encode_script

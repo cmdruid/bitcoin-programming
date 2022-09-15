@@ -1,3 +1,9 @@
+SIGHASH_MAP = {
+    0x41: 'ALL',
+    0x42: 'NONE',
+    0x43: 'SINGLE',
+}
+
 OPCODE_MAP = {
     0: 'OP_0',
     76: 'OP_PUSHDATA1',
@@ -96,3 +102,6 @@ def get_opname(num):
   
 def get_opcode(string):
     return next((k for k,v in OPCODE_MAP.items() if v == string), None)
+
+def get_sigflag(string):
+    return next((k for k,v in SIGHASH_MAP.items() if v == string), None)

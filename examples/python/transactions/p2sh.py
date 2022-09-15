@@ -34,10 +34,12 @@ within our script, this second transaction does not need to be signed.
 
 from sys import path
 
+path.append( '.' )
 path.append( '..' )
 
+from lib.hash import hash160
 from lib.encoder import encode_tx, encode_script
-from lib.helper import decode_address, hash_script, hash160, get_txid
+from lib.helper import decode_address, hash_script, get_txid
 
 ## Update this information to use one of your existing unspent 
 ## transaction outputs (utxo). See 'listunspents' for more info.

@@ -1,34 +1,9 @@
 from hashlib import sha256
-from .ripemd import ripemd160
 from .encoder import encode_script
 from .base58 import base58_address, decode_base58
 from .bech32 import encode, decode
-
-
-def get_bytes(data):
-    ''' Format input data and return as byte-string.
-    '''
-    if type(data) == int:
-        return data.to_bytes(1, 'little')
-    if type(data) == str:
-        return bytes.fromhex(data)
-    if type(data) == bytes:
-        return data
-    raise Exception(f'Unknown format: {type(data)}')
-
-
-def hash256(data):
-    ''' Performs a hash256 operation.
-    '''
-    data = get_bytes(data)
-    return sha256(sha256(data).digest()).digest()
-
-
-def hash160(data):
-    ''' Performs a hash160 operation.
-    '''
-    data = get_bytes(data)
-    return ripemd160(sha256(data).digest())
+from .format import get_bytes
+from .hash import hash256, hash160
 
 
 def hash_script(script, fmt='hash160'):
@@ -50,14 +25,14 @@ def get_txid(hex):
     return tx_hash[::-1].hex()
 
 
-def encode_address(hash, fmt='bech32', hrp='bcrt', ver=0):
+def encode_address(digest, fmt='bech32', hrp='bcrt', ver=0):
     ''' Encodes a Bitcoin address or key into a given format. 
     '''
-    hash = get_bytes(hash)
+    digest = get_bytes(digest)
     if fmt == 'bech32':
-        return encode(hrp, ver, hash)
+        return encode(hrp, ver, digest)
     if fmt == 'base58':
-        return base58_address(hash)
+        return base58_address(digest)
     raise Exception(f'Unknown format: {fmt}')
 
 

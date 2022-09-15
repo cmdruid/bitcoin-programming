@@ -1,13 +1,12 @@
 import json, requests, uuid
 
-def rpc(method, args = [], **params):
+def rpc(method, args = [], **kwargs):
+  username = kwargs.get('username', 'bitcoin')
+  password = kwargs.get('password', 'password')
+  wallet   = kwargs.get('wallet', '')
 
-  username = params['username'] if 'username' in params else 'bitcoin'
-  password = params['password'] if 'password' in params else 'password'
-  wallet   = params['wallet']   if 'wallet'   in params else ''
-
-  url  = params['url']  if 'url'  in params else '127.0.0.1'
-  port = params['port'] if 'port' in params else 18443
+  url  = kwargs.get('url', '127.0.0.1')
+  port = kwargs.get('port', 18443)
   args = args if type(args) is list else [ args ]
 
   if wallet:

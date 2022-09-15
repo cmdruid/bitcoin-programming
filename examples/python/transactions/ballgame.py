@@ -8,14 +8,7 @@ path.append('.')
 path.append('..')
 
 from lib.encoder import encode_tx, encode_script
-
-from lib.helper import (
-    decode_address, 
-    get_txid, 
-    hash160, 
-    hash256,
-    hash_script
-)
+from lib.helper import decode_address, get_txid, hash_script
 
 ## Update this information to use one of your existing unspent 
 ## transaction outputs (utxo). See 'listunspents' for more info.

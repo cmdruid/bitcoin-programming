@@ -1,13 +1,10 @@
 from hashlib import sha256
+from .hash import hash256
 
 ## Credit to Jimmy Song. Source:
 ## https://github.com/cmdruid/programmingbitcoin
 
 ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-
-
-def hash256(data):
-    return sha256(sha256(data).digest()).digest()
 
 
 def encode_base58(s):

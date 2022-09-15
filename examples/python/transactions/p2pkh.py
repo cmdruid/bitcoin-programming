@@ -20,6 +20,7 @@ to the blockchain (if you are using regtest).
 
 from sys import path
 
+path.append( '.' )
 path.append( '..' )
 
 from lib.encoder import encode_tx
