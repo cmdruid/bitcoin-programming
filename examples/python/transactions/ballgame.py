@@ -1,40 +1,50 @@
-"""
-Example of a Pay-to-Witness-Script-Hash using basic addition.
-"""
+#!/usr/bin/env python3
+import json, os, sys
 
-from sys import path
+sys.path.append(os.path.dirname(__file__).split('/transactions')[0])
 
-path.append('.')
-path.append('..')
+from copy import deepcopy
 
-from lib.encoder import encode_tx, encode_script
-from lib.helper import decode_address, get_txid, hash_script
+from lib.hash       import hash160
+from lib.signatures import sign_tx
+from lib.encoder    import encode_tx, encode_script
+from lib.helper     import hash_script, get_txid
+from lib.rpc        import RpcSocket
 
-## Update this information to use one of your existing unspent 
-## transaction outputs (utxo). See 'listunspents' for more info.
-funding_txid = 'e365d909ca5793144122bf381af83210d1a9256aa3a5ac20eba8019aa1a66cd1'
-funding_vout = 0
-funding_value = 2500000000
+## Setup our RPC socket.
+fee = 1000
+rpc = RpcSocket({ 'wallet': 'regtest' })
+assert rpc.check()
 
-## Here is the script that we will be using.
+## Get utxo data for each of our participants.
+alice_utxo = rpc.get_utxo(0)
+bob_utxo = rpc.get_utxo(1)
+
+## Get receiving keys and addresses:
+alice_recv = rpc.get_recv()
+bob_recv   = rpc.get_recv()
+
+## Configure the transaction fee.
+tx_fee = 1000
+
+## The locking script.
 script_words = [
     'OP_IF',
     'OP_HASH160',
     'e81bfa71da56f187cce1319ee773dabf56988e95',
-    'OP_EQUAL',
+    'OP_EQUALVERIFY',
+    alice_recv['pub_key'],
+    'OP_CHECKSIG',
     'OP_ELSE',
     'OP_HASH160',
     '0f79cd7e22364ff5ed1c6c381f60b0a53d84be19',
-    'OP_EQUAL',
+    'OP_EQUALVERIFY',
+    bob_recv['pub_key'],
+    'OP_CHECKSIG',
     'OP_ENDIF'
 ]
 
-## This is the version number for the witness program 
-## interpreter. We'll be sticking to version 0.
-witness_version = 0
-
-## We hash the above program, then provide a witness version
-## along with a 256-bit hash. This will lock the transaction 
+## We hash the above program with a sha256. This will lock the
 ## output to accept the program script which matches the hash.
 script_hash = hash_script(script_words, fmt='sha256')
 
@@ -42,67 +52,129 @@ script_hash = hash_script(script_words, fmt='sha256')
 ## unlock and spend the output. It should decode to match the script hash.
 witness_script = encode_script(script_words, prepend_len=False).hex()
 
-## The initial locking transaction. This spends the utxo from our funding 
-## transaction, and moves the funds to the utxo for our witness program.
-locking_tx = encode_tx({
+## This is the total value of the locking script.
+total_value = alice_utxo['value'] + bob_utxo['value'] - tx_fee
+
+## The locking transaction. This tx spends the participant utxos.
+locking_tx = {
     'version': 1,
-    'vin': [{
-        'txid': funding_txid,
-        'vout': funding_vout,
+    'vin': [
+      {
+        'txid': alice_utxo['txid'],
+        'vout': alice_utxo['vout'],
         'script_sig': [],
         'sequence': 0xFFFFFFFF
-    }],
-    'vout': [{
-        'value': funding_value - 1000,
-        'script_pubkey': [ witness_version, script_hash ]
-    }],
-    'locktime': 0
-})
-
-## Now that we have the complete transaction, 
-## we can calculate the transaction ID.
-locking_txid = get_txid(locking_tx)
-
-## Replace this with your own bech32 address.
-receive_address = 'bcrt1q66tuvf7tnv3sdj83c3y4wveuqnf8s5rplx3klq'
-
-## Bech32 addresses will decode into a witness version and pubkey hash.
-witness_version, pubkey_hash = decode_address(receive_address)
-
-## Since our above program script does not check for signatures, you can 
-## broadcast this transaction without providing a signature
-spending_tx = encode_tx({
-    'version': 1,
-    'vin': [{
-        'txid': locking_txid,
-        'vout': 0,
+      },
+      {
+        'txid': bob_utxo['txid'],
+        'vout': bob_utxo['vout'],
         'script_sig': [],
-        'sequence': 0xFFFFFFFF,
-        'witness': [ 'ab' * 32, '00', witness_script ]
-    }],
+        'sequence': 0xFFFFFFFF
+      }
+    ],
     'vout': [{
-        'value': funding_value - 2000,
-        'script_pubkey': [ witness_version, pubkey_hash ]
+        'value': total_value,
+        'script_pubkey': [ 0, script_hash ]
     }],
     'locktime':0
-})
+}
+
+## Get txid for the locking script.
+locking_raw  = encode_tx(locking_tx)
+locking_txid = get_txid(locking_raw)
+
+## Each participant signs the locking transaction.
+alice_signature = sign_tx(
+  locking_tx, 
+  0, 
+  alice_utxo['value'], 
+  alice_utxo['pubkey_hash'], 
+  alice_utxo['priv_key']
+)
+
+bob_signature = sign_tx(
+  locking_tx, 
+  1, 
+  bob_utxo['value'], 
+  bob_utxo['pubkey_hash'], 
+  bob_utxo['priv_key']
+)
+
+## Add the signatures and pubkeys to the witness field.
+locking_tx['vin'][0]['witness'] = [ alice_signature, alice_utxo['pub_key'] ]
+locking_tx['vin'][1]['witness'] = [ bob_signature, bob_utxo['pub_key'] ]
 
 print(f'''
-# Pay-to-Witness-Script-Hash Example using addition
+Locking Tx:
+{json.dumps(locking_tx, indent=2)}
 
 Locking Txid:
 {locking_txid}
 
-Witness Script:
-{witness_script}
+Locking Tx Value:
+{total_value}
 
-Script Hash:
+Locking Tx Hex:
+{encode_tx(locking_tx)}
+
+Witness hash:
 {script_hash}
 
-Locking Tx:
-{locking_tx}
+Witness Program:
+{witness_script}
+''')
 
-Unlocking Tx:
-{spending_tx}
+## Setup a redeem transaction.
+redeem_tx = {
+    'version': 1,
+    'vin': [
+      {
+        'txid': locking_txid,
+        'vout': 0,
+        'script_sig': [],
+        'sequence': 0xFFFFFFFF
+      },
+    ],
+    'vout':[
+        {
+          'value': total_value - tx_fee,
+          'script_pubkey': []
+        },
+    ]
+}
 
+## Configure redeem TX for Alice
+alice_tx = deepcopy(redeem_tx)
+alice_tx['vout'][0]['script_pubkey'] = [ 0, alice_recv['pubkey_hash'] ]
+alice_sig = sign_tx(alice_tx, 0, total_value, witness_script, alice_recv['priv_key'])
+alice_tx['vin'][0]['witness'] = [
+  alice_sig,
+  'ab' * 32, 
+  '01', 
+  witness_script
+]
+
+## Configure redeem TX for Bob.
+bob_tx = deepcopy(redeem_tx)
+bob_tx['vout'][0]['script_pubkey'] = [ 0, bob_recv['pubkey_hash'] ]
+bob_sig = sign_tx(bob_tx, 0, total_value, witness_script, bob_recv['priv_key'])
+bob_tx['vin'][0]['witness'] = [
+  bob_sig,
+  'ab' * 31 + 'ac', 
+  '00', 
+  witness_script
+]
+
+print(f'''
+Alice's Redeem Tx:
+{json.dumps(alice_tx, indent=2)}
+
+Alice's Redeem Tx Hex:
+{encode_tx(alice_tx)}
+
+Bob's Redeem Tx:
+{json.dumps(bob_tx, indent=2)}
+
+Bob's Redeem Tx Hex:
+{encode_tx(bob_tx)}
 ''')

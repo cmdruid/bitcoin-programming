@@ -71,8 +71,13 @@ def check_witness(inputs):
 def encode_witness(witness):
     ''' Encode the witness data for a transaction. '''
     if type(witness) == list:
-        length = len(witness).to_bytes(1, 'little')
-        return length + encode_script(witness, prepend_len=False)
+        program = encode_script(witness[-1])
+        raw = len(witness).to_bytes(1, 'little')
+        for i in range(0, len(witness) - 1):
+            word = format_word(witness[i])
+            raw += write_varint(len(word))
+            raw += word
+        return raw + program
     if type(witness) == str:
         return bytes.fromhex(witness)
     if type(witness) == bytes:
@@ -94,15 +99,15 @@ def encode_script(script, prepend_len=True):
         # If the script is a list,
         # iterate through the words.
         for word in script:
-            # Adjust word formatting if needed.
-            word = format_word(word)
-            if type(word) != int:
-                # Append current word as a variable.
-                raw += word_size(word)
-                raw += word         
-            else:
-                # Append current word as an opcode.
+            word = check_opcode(word)
+            if type(word) == int:
+                # Append word as an opcode.
                 raw += word.to_bytes(1, 'little')
+            else:
+                # Append word as an argument.
+                word = format_word(word)
+                raw += word_size(word)
+                raw += word
     elif type(script) == str:
         # If the script is already a hex string, return bytes.
         raw = bytes.fromhex(script)
@@ -158,11 +163,10 @@ def hash_outputs(outputs, sighash, input_idx=None):
         return b'0' * 32
 
 
-def encode_sighash(obj, txin_idx, txin_value, **kwargs):
+def encode_sighash(obj, txin_idx, txin_value, script, **kwargs):
     ''' Generate the message digest that is used
         to sign a BIP143 Segwit transaction.
     '''
-
     version  = obj.get('version', 1)
     inputs   = obj.get('vin', [])
     outputs  = obj.get('vout', [])
@@ -184,15 +188,16 @@ def encode_sighash(obj, txin_idx, txin_value, **kwargs):
 
     # Append all information for the
     # transaction that we are signing.
-    txin = inputs[txin_idx] 
+    txin = inputs[txin_idx]
     raw += bytes.fromhex(txin['txid'])[::-1]
     raw += txin['vout'].to_bytes(4, 'little')
 
     # Append the script being used to redeem the funds.
-    if redeem_script:
-        raw += bytes.fromhex(redeem_script)
-    elif 'witness' in txin:
-        raw += encode_script(txin['witness'][-1])
+    if type(script) == str:
+        raw_script = bytes.fromhex(script)
+        raw += write_varint(len(raw_script)) + raw_script
+    elif type(script) == list:
+        raw += encode_script(script)
     else:
         raise Exception('There is no script to sign!')
 
@@ -213,18 +218,28 @@ def encode_sighash(obj, txin_idx, txin_value, **kwargs):
     # Hash256 the raw string, then return the result.
     return hash256(raw).hex()
 
-def format_word(word):
-    ''' We are type-checking the variable, 
-        and adjusting the format if needed. 
+def check_opcode(word):
+    ''' Check if word is an opcode, 
+        and return the integer value.
     '''
     if type(word) == str:
         if 'OP_' in word:
             return get_opcode(word)
+    return word
+
+def format_word(word):
+    ''' We are type-checking the variable, 
+        and adjusting the format if needed. 
+    '''
+    word_type = type(word)
+    if word_type == str:
         return bytes.fromhex(word)
-    elif type(word) in [int, bytes]:
+    elif word_type == int:
+        return word.to_bytes(1, 'little')
+    elif word_type == bytes:
         return word
     else:
-        raise Exception(f'Invalid word type: "{word}" = {type(word)}')
+        raise Exception(f'Invalid word type: "{word}" = {word_type}')
 
 
 def word_size(word):
