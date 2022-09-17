@@ -161,7 +161,7 @@ bob_sig = sign_tx(bob_tx, 0, total_value, witness_script, bob_recv['priv_key'])
 bob_tx['vin'][0]['witness'] = [
   bob_sig,
   'ab' * 31 + 'ac', 
-  '00', 
+  0, 
   witness_script
 ]
 

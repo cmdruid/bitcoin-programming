@@ -75,7 +75,8 @@ def encode_witness(witness):
         raw = len(witness).to_bytes(1, 'little')
         for i in range(0, len(witness) - 1):
             word = format_word(witness[i])
-            raw += write_varint(len(word))
+            if word != b'\x00':
+              raw += write_varint(len(word))
             raw += word
         return raw + program
     if type(witness) == str:
