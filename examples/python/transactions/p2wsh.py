@@ -1,45 +1,28 @@
-"""
-Example of a Pay-to-Witness-Script-Hash transaction.
+#!/usr/bin/env python3
 
-First, we will construct a transaction that is locked to
-a script hash. We will keep the program script simple: 
-evaluate that a secret pre-image matches a given hash.
-
-Specify a funding utxo, then sign and broadcast the first 
-transaction. This will transfer control of the funds to the 
-new unspent output. You can generate a block in order to 
-commit this transaction to your regtest blockchain.
-
-Next, specify a receive address, then sign and broadcast the
-second transaction. This will spend the previous transaction
-by providing the pre-image of the secret message, along with
-the program script.
-
-The receive address for the second transaction should be
-picked up by your wallet automatically, and listed as a new 
-utxo under 'listunspent' once you generate another block.
+""" Example of a Pay-to-Witness-Script-Hash transaction.
 """
 
-from sys import path
+import os, sys
 
-path.append( '.' )
-path.append( '..' )
+sys.path.append(os.path.dirname(__file__).split('/transactions')[0])
 
 from lib.encoder import encode_tx, encode_script
-from lib.hash    import hash160, hash256
-from lib.helper  import decode_address, get_txid, hash_script
-from lib.signatures import sign_tx
+from lib.hash    import hash160, hash256, sha256
+from lib.helper  import decode_address
+from lib.sign    import sign_tx
 from lib.rpc     import RpcSocket
 
-## Setup our RPC socket and tx fee.
-fee = 1000
+## Setup our RPC socket.
 rpc = RpcSocket({ 'wallet': 'regtest' })
 assert rpc.check()
 
-## Get utxo data for each of our participants.
+## First, we will lookup an existing utxo,
+## and use that to fund our transaction.
 utxo = rpc.get_utxo(0)
 
-## Get a receive address and keypair.
+## We will also grab a new receiving address,
+## and lock the funds to this address.
 recv = rpc.get_recv()
 
 ## Replace this default preimage with your own secret.
@@ -49,23 +32,31 @@ secret_preimage = 'weareallsatoshi'
 secret_bytes = secret_preimage.encode('utf8').hex()
 secret_hash  = hash160(secret_bytes).hex()
 
-## Here is the script that we will be using.
-script_words = ['OP_HASH160', secret_hash, 'OP_EQUALVERIFY', recv['pub_key'], 'OP_CHECKSIG']
+## This is where we specify the version number for the program interpreter. 
+## We'll be using version 0.
+script_version = 0
 
-print(script_words)
+## Here is the locking script that we will be using. We are going to
+## require the redeemer to reveral the secret, along with their public
+## key for the receipt address, and matching signature.
+script_words = [
+    'OP_HASH160', secret_hash, 'OP_EQUALVERIFY', 
+    'OP_DUP', 'OP_HASH160', hash160(recv['pub_key']).hex(), 'OP_EQUALVERIFY', 
+    'OP_CHECKSIG'
+]
 
-## This is the version number for the witness program 
-## interpreter. We'll be sticking to version 0.
-witness_version = 0
+## This is the hex-encoded format of the script. We will present this when 
+## we unlock and spend the output. It should match the pre-image used for 
+## making the script hash.
+redeem_script = encode_script(script_words, prepend_len=False).hex()
 
-## We hash the above program, then provide a witness version
-## along with a 256-bit hash. This will lock the transaction 
-## output to accept the program script which matches the hash.
-script_hash = hash_script(script_words, fmt='sha256')
+## We hash the script using sha256, then provide a version number
+## along with the hash. This will lock the transaction output to 
+## accept only the program script which matches the hash.
+script_hash = sha256(redeem_script).hex()
 
-## This is the hex-encoded script that we will present in order to 
-## unlock and spend the output. It should decode to match the script hash.
-witness_script = encode_script(script_words, prepend_len=False).hex()
+## Calculate the value of the transaction output, minus fees.
+locking_tx_value = utxo['value'] - 1000
 
 ## The initial locking transaction. This spends the utxo from our funding 
 ## transaction, and moves the funds to the utxo for our witness program.
@@ -78,15 +69,18 @@ locking_tx = {
         'sequence': 0xFFFFFFFF
     }],
     'vout': [{
-        'value': utxo['value'] - 1000,
-        'script_pubkey': [ witness_version, script_hash ]
+        'value': locking_tx_value,
+        'script_pubkey': [ script_version, script_hash ]
     }],
     'locktime': 0
 }
 
-locking_raw = encode_tx(locking_tx)
-locking_txid = get_txid(locking_raw)
+## Encode the transaction into raw hex,
+## and calculate the transaction ID
+locking_hex  = encode_tx(locking_tx)
+locking_txid = hash256(bytes.fromhex(locking_hex))[::-1].hex()
 
+## Sign the transaction using our key-pair from the utxo.
 locking_sig = sign_tx(
   locking_tx, 
   0,
@@ -95,24 +89,30 @@ locking_sig = sign_tx(
   utxo['priv_key']
 )
 
+## Add the signature and public key to the transaction.
 locking_tx['vin'][0]['witness'] = [ locking_sig, utxo['pub_key'] ]
 
-## Replace this with your own bech32 address.
-receive_address = recv['address']
+print(f'''
+# Pay-to-Witness-Script-Hash Example
 
-## Bech32 addresses will decode into a witness version and pubkey hash.
-witness_version, pubkey_hash = decode_address(receive_address)
+Locking Txid:
+{locking_txid}
 
-print(pubkey_hash)
+Redeem Script:
+{redeem_script}
+
+Locking Tx:
+{encode_tx(locking_tx)}
+''')
+
+## Bech32 addresses will decode into a script version and pubkey hash.
+script_version, pubkey_hash = decode_address(recv['address'])
 
 ## This transaction will redeem the previous utxo by providing the secret 
-## pre-image, plus the witness program. The funds are being locked to the
-## pubkey hash from the above address. Once the transaction is confirmed,
-## your wallet software should recognize this utxo as spendable.
-##
-## Since our above program script does not check for signatures, you can 
-## broadcast this transaction without providing a signature
-spending_tx = {
+## pre-image, plus the public key and signature, plus the witness program. 
+## Once the transaction is confirmed, your wallet software should recognize 
+## this utxo as spendable.
+redeem_tx = {
     'version': 1,
     'vin': [{
         'txid': locking_txid,
@@ -121,44 +121,20 @@ spending_tx = {
         'sequence': 0xFFFFFFFF
     }],
     'vout': [{
-        'value': utxo['value'] - 2000,
-        'script_pubkey': [ witness_version, pubkey_hash ]
+        'value': locking_tx_value - 1000,
+        'script_pubkey': [ script_version, pubkey_hash ]
     }],
     'locktime':0
 }
 
-spending_sig = sign_tx(
-  spending_tx,
+redeem_sig = sign_tx(
+  redeem_tx,
   0,
-  utxo['value'] - 1000,
-  witness_script,
+  locking_tx_value,
+  redeem_script,
   recv['priv_key']
 )
 
-spending_tx['vin'][0]['witness'] = [ spending_sig, secret_bytes, witness_script ]
+redeem_tx['vin'][0]['witness'] = [ redeem_sig, recv['pub_key'], secret_bytes, redeem_script ]
 
-print(f'''
-# Pay-to-Witness-Script-Hash Example
-
-Locking Txid:
-{locking_txid}
-
-Witness Script:
-{witness_script}
-
-Script Hash:
-{script_hash}
-
-Secret Bytes:
-{secret_bytes}
-
-Secret Hash:
-{secret_hash}
-
-Locking Tx:
-{encode_tx(locking_tx)}
-
-Unlocking Tx:
-{encode_tx(spending_tx)}
-
-''')
+print(f'Unlocking Tx:\n{encode_tx(redeem_tx)}')

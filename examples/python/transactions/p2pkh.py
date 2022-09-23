@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Example of a Pay-to-Pubkey-Hash (P2PKH) transaction.
 
@@ -20,47 +22,66 @@ to the blockchain (if you are using regtest).
 
 from sys import path
 
-path.append( '.' )
-path.append( '..' )
+sys.path.append(os.path.dirname(__file__).split('/transactions')[0])
 
 from lib.encoder import encode_tx
 from lib.helper import decode_address
+from lib.sign    import sign_tx
+from lib.rpc     import RpcSocket
 
-## Update this information to use one of your existing unspent 
-## transaction outputs (utxo). See 'listunspents' for more info.
-funding_txid = '8251512dde40cc88818a49ca5c7719d1a8918305b4fb0b247d04bf4b8f9606d9'
-funding_vout = 0
-funding_value = 5000000000
+## Setup our RPC socket.
+rpc = RpcSocket({ 'wallet': 'regtest' })
+assert rpc.check()
 
-## Replace this with your own address. You can use the 'getnewaddress'
-## command. Bech32 formatted addresses are provided by default, but you 
-## can generate an older Base58 address by specifying:
-## 'getnewaddress -address_type legacy'
-recipient_address = 'mfh8XHh2oPi15imgxh7xsKd4XGhEcHevCG' 
+## First, we will lookup an existing utxo,
+## and use that to fund our transaction.
+utxo = rpc.get_utxo(0)
 
-## We decode the address into the actual pubkey hash.
-pubkey_hash = decode_address(recipient_address)
+## We will also grab a new receiving address,
+## and lock the funds to this address.
+recv = rpc.get_recv()
+
+## We decode the address to get the actual hash.
+pubkey_hash = decode_address(recv['address'])
 
 ## The spending transaction. We are including a basic P2PKH script in 
 ## the script_pubkey field. This script can later be unlocked by a new 
 ## transaction input which provides the correct public key and signature.
-spending_tx = encode_tx({
+new_tx = {
     'version': 1,
     'vin': [{
-        'txid': funding_txid,
-        'vout': funding_vout,
+        'txid': utxo['txid'],
+        'vout': utxo['vout'],
         'script_sig': [],
         'sequence': 0xFFFFFFFF
     }],
     'vout': [{
-        'value': funding_value,
+        'value': utxo['value'] - 1000,
         'script_pubkey': ['OP_DUP', 'OP_HASH160', pubkey_hash, 'OP_EQUALVERIFY', 'OP_CHECKSIG']
     }],
     'locktime': 0
-})
+}
 
-def p2pkh_example():
-    print(f'''
+## Encode the transaction into raw hex,
+## and calculate the transaction ID
+locking_hex  = encode_tx(locking_tx)
+locking_txid = hash256(bytes.fromhex(locking_hex))[::-1].hex()
+
+## Sign the transaction using our key-pair from the utxo.
+redeem_script = f'76a914{pubkey_hash}88ac'
+
+signature = sign_tx(
+    new_tx,
+    0,
+    utxo['value'],
+    redeem_script,
+    utxo['priv_key']
+)
+
+## Add the signature and public key to the transaction.
+locking_tx['vin'][0]['witness'] = [ signature, utxo['pub_key'] ]
+
+print(f'''
 # Pay-to-Pubkey-Hash Example
 
 Recipient Address:
