@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Example of a Pay-to-Witness-Pubkey-Hash (P2WPKH) transaction.
 
@@ -48,46 +50,68 @@ within our script, this second transaction does not need to be signed.
 (it is dangerous to lock real coins to a script that doesn't check for signatures)
 """
 
-from sys import path
+import os, sys
 
-path.append( '.' )
-path.append( '..' )
+sys.path.append(os.path.dirname(__file__).split('/transactions')[0])
 
 from lib.encoder import encode_tx, encode_script
-from lib.helper import decode_address, hash_script, get_txid
+from lib.helper  import decode_address, hash_script, get_txid
+from lib.sign    import sign_tx
+from lib.rpc     import RpcSocket
 
-## Replace this with your own bech32 address.
-address = 'bcrt1qgl0gmk0ljucd90m0qa42qstaakl9lkdnhdxzq9'
+## Setup our RPC socket.
+rpc = RpcSocket({ 'wallet': 'regtest' })
+assert rpc.check()
+
+## First, we will lookup an existing utxo,
+## and use that to fund our transaction.
+utxo = rpc.get_utxo(0)
+
+## We will also grab a new receiving address,
+## and lock the funds to this address.
+recv = rpc.get_recv()
 
 ## We decode the address into the witness version and program script.
-version, program = decode_address(address)
+version, pubkey_hash = decode_address(recv['address'])
 
 print(f'Witness Version: {version}')
-print(f'Witness Program: {program}')
+print(f'Witness Program: {pubkey_hash}')
 
 ## The initial spending transaction. This tx spends a previous utxo,
 ## and commits the funds to our P2WPKH transaction.
 
-p2wpkh = encode_tx({
-    'version':
-    1,
+new_tx = {
+    'version': 1,
     'vin': [{
-        'txid':
-        '58fe5e0ee8eb2ecba77ff16576651b38acfa3972891e08f8e71bc9246a46f6af',
-        'vout': 0,
+        'txid': utxo['txid'],
+        'vout': utxo['vout'],
         'script_sig': [],
         'sequence': 0xFFFFFFFF
     }],
     'vout': [{
-        'value': 2499999000,
-        'script_pubkey': [ version, program ]
+        'value': utxo['value'] - 1000,
+        'script_pubkey': [ version, pubkey_hash ]
     }],
-    'locktime':
-    0
-})
+    'locktime':0
+}
 
 ## Since we have the complete transaction, we can calculate the transaction ID.
-txid = get_txid(p2wpkh)
+new_hex  = encode_tx(new_tx)
+new_txid = get_txid(new_hex)
 
-print('\nTxid:\n' + txid)
-print('\nHex:\n' + p2wpkh)
+## Sign the transaction using our key-pair from the utxo.
+redeem_script = f'76a914{pubkey_hash}88ac'
+signature = sign_tx(
+  new_tx, 
+  0,
+  utxo['value'], 
+  redeem_script,
+  utxo['priv_key']
+)
+
+## Add the signature and public key to the transaction.
+new_tx['vin'][0]['witness'] = [ signature, utxo['pub_key'] ]
+
+## Since we have the complete transaction, we can calculate the transaction ID.
+print('\nTxid:\n' + new_txid)
+print('\nHex:\n' + encode_tx(new_tx))

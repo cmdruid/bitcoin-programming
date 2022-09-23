@@ -176,9 +176,6 @@ def encode_sighash(obj, txin_idx, txin_value, script, **kwargs):
     anypay   = kwargs.get('anypay', False)
     redeem_script = kwargs.get('redeem_script', None)
 
-    # Check if witness data exists in inputs.
-    #has_witness = check_witness(inputs)
-
     # Encode the transaction version number.
     raw = encode_version(version)
 

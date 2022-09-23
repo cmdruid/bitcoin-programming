@@ -24,23 +24,43 @@ bob_utxo = rpc.get_utxo(1)
 alice_recv = rpc.get_recv()
 bob_recv   = rpc.get_recv()
 
+## Escrow keys
+escrow_key_alice = 'secreta'
+escrow_key_bob   = 'secretb'
+
 ## Configure the transaction fee.
 tx_fee = 1000
 
 ## The locking script.
 script_words = [
+    ## Either Alice(1) or Bob(0) path.
     'OP_IF',
-    'OP_HASH160',
-    'e81bfa71da56f187cce1319ee773dabf56988e95',
-    'OP_EQUALVERIFY',
-    alice_recv['pub_key'],
-    'OP_CHECKSIG',
+      ## Alice can either (1) use escrow key,
+      ## or (2) check locktime expiration.
+      'OP_IF',
+        ## Bob or escrow releases key.
+        'OP_HASH160',
+        escrow_alice_hash,
+        'OP_EQUALVERIFY',
+      'OP_ELSE',
+        ## https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki
+        '7d',
+        'OP_CHECKSEQUENCEVERIFY',
+      'OP_ENDIF',
+      'OP_DUP',
+      'OP_HASH160',
+      recv_alice_hash,
+      'OP_EQUALVERIFY',
+      'OP_CHECKSIG',
     'OP_ELSE',
-    'OP_HASH160',
-    '0f79cd7e22364ff5ed1c6c381f60b0a53d84be19',
-    'OP_EQUALVERIFY',
-    bob_recv['pub_key'],
-    'OP_CHECKSIG',
+      'OP_HASH160',
+      escrow_bob_hash,
+      'OP_EQUALVERIFY',
+      'OP_DUP',
+      'OP_HASH160',
+      recv_bob_hash,
+      'OP_EQUALVERIFY',
+      'OP_CHECKSIG',
     'OP_ENDIF'
 ]
 
@@ -149,8 +169,10 @@ alice_tx['vout'][0]['script_pubkey'] = [ 0, alice_recv['pubkey_hash'] ]
 alice_sig = sign_tx(alice_tx, 0, total_value, witness_script, alice_recv['priv_key'])
 alice_tx['vin'][0]['witness'] = [
   alice_sig,
-  'ab' * 32, 
+  alice_recv['pub_key'],
+  escrow_alice_preimage,
   '01', 
+  '01',
   witness_script
 ]
 

@@ -25,14 +25,14 @@ def get_txid(hex):
     return tx_hash[::-1].hex()
 
 
-def encode_address(digest, fmt='bech32', hrp='bcrt', ver=0):
+def encode_address(string, fmt='bech32', hrp='bcrt', ver=0):
     ''' Encodes a Bitcoin address or key into a given format. 
     '''
-    digest = get_bytes(digest)
+    raw = get_bytes(string)
     if fmt == 'bech32':
-        return encode(hrp, ver, digest)
+        return encode(hrp, ver, raw)
     if fmt == 'base58':
-        return base58_address(digest)
+        return base58_address(raw)
     raise Exception(f'Unknown format: {fmt}')
 
 

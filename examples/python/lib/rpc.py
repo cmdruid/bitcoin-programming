@@ -112,9 +112,12 @@ class RpcSocket:
             'value': int(utxos[idx]['amount'] * 100000000)
         }
 
-    def get_recv(self, address=None):
+    def get_recv(self, address=None, fmt='bech32'):
         if address is None:
-            address = self.call('getnewaddress')
+            if fmt == 'base58':
+                address = self.call('getnewaddress', ['-format', 'legacy'])
+            else:
+                address = self.call('getnewaddress')
         encoded_key = self.call('dumpprivkey', address)
         public_key  = self.call('getaddressinfo', address)['pubkey']
         pubkey_hash = hash160(public_key).hex()
