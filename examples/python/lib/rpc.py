@@ -76,9 +76,9 @@ class RpcSocket:
 
     def isWalletExists(self):
         wallets = self.call('listwalletdir')
-        return [ w['name'] for w in wallets if w['name'] == self.wallet ]
+        return [ w['name'] for w in wallets['wallets'] if w['name'] == self.wallet ]
 
-
+    
     def loadWallet(self):
         if self.isWalletLoaded():
             return True
