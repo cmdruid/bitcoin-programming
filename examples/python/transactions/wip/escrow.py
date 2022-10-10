@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json, os, sys
 
-sys.path.append(os.path.dirname(__file__).split('/transactions')[0])
+sys.path.append(os.path.dirname(__file__).split('/transactions/wip')[0])
 
 from copy import deepcopy
 
@@ -25,43 +25,42 @@ alice_recv = rpc.get_recv()
 bob_recv   = rpc.get_recv()
 
 ## Escrow keys
-escrow_key_alice = 'secreta'
-escrow_key_bob   = 'secretb'
+alice_lock  = rpc.get_recv()
+alice_claim = rpc.get_recv()
+bob_lock    = rpc.get_recv()
+bob_claim   = rpc.get_recv()
 
 ## Configure the transaction fee.
 tx_fee = 1000
 
 ## The locking script.
 script_words = [
-    ## Either Alice(1) or Bob(0) path.
-    'OP_IF',
-      ## Alice can either (1) use escrow key,
-      ## or (2) check locktime expiration.
-      'OP_IF',
-        ## Bob or escrow releases key.
-        'OP_HASH160',
-        escrow_alice_hash,
-        'OP_EQUALVERIFY',
-      'OP_ELSE',
-        ## https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki
-        '7d',
-        'OP_CHECKSEQUENCEVERIFY',
-      'OP_ENDIF',
-      'OP_DUP',
-      'OP_HASH160',
-      recv_alice_hash,
-      'OP_EQUALVERIFY',
-      'OP_CHECKSIG',
-    'OP_ELSE',
-      'OP_HASH160',
-      escrow_bob_hash,
-      'OP_EQUALVERIFY',
-      'OP_DUP',
-      'OP_HASH160',
-      recv_bob_hash,
-      'OP_EQUALVERIFY',
-      'OP_CHECKSIG',
-    'OP_ENDIF'
+'OP_DUP',
+'OP_HASH160',
+alice_lock['pubkey_hash'],
+'OP_EQUAL',
+'OP_IF',
+  'OP_DROP',
+  'OP_DUP',
+  'OP_HASH160',
+  bob_claim['pubkey_hash'],
+  'OP_EQUALVERIFY',
+  'OP_CHECKSIG',
+'OP_ELSE',
+  'OP_HASH160',
+  bob_lock['pubkey_hash'],
+  'OP_EQUAL',
+  'OP_NOTIF',
+    '14',
+    'OP_CHECKSEQUENCEVERIFY',
+    'OP_DROP',
+  'OP_ENDIF',
+  'OP_DUP',
+  'OP_HASH160',
+  alice_claim['pubkey_hash'],
+  'OP_EQUALVERIFY',
+  'OP_CHECKSIG',
+'OP_ENDIF'
 ]
 
 ## We hash the above program with a sha256. This will lock the
@@ -77,7 +76,7 @@ total_value = alice_utxo['value'] + bob_utxo['value'] - tx_fee
 
 ## The locking transaction. This tx spends the participant utxos.
 locking_tx = {
-    'version': 1,
+    'version': 2,
     'vin': [
       {
         'txid': alice_utxo['txid'],
@@ -146,13 +145,13 @@ Witness Program:
 
 ## Setup a redeem transaction.
 redeem_tx = {
-    'version': 1,
+    'version': 2,
     'vin': [
       {
         'txid': locking_txid,
         'vout': 0,
         'script_sig': [],
-        'sequence': 0xFFFFFFFF
+        'sequence': 0x00000014
       },
     ],
     'vout':[
@@ -166,24 +165,22 @@ redeem_tx = {
 ## Configure redeem TX for Alice
 alice_tx = deepcopy(redeem_tx)
 alice_tx['vout'][0]['script_pubkey'] = [ 0, alice_recv['pubkey_hash'] ]
-alice_sig = sign_tx(alice_tx, 0, total_value, witness_script, alice_recv['priv_key'])
+alice_sig = sign_tx(alice_tx, 0, total_value, witness_script, alice_claim['priv_key'])
 alice_tx['vin'][0]['witness'] = [
   alice_sig,
-  alice_recv['pub_key'],
-  escrow_alice_preimage,
-  '01', 
-  '01',
+  alice_claim['pub_key'],
+  alice_claim['pub_key'],
   witness_script
 ]
 
 ## Configure redeem TX for Bob.
 bob_tx = deepcopy(redeem_tx)
 bob_tx['vout'][0]['script_pubkey'] = [ 0, bob_recv['pubkey_hash'] ]
-bob_sig = sign_tx(bob_tx, 0, total_value, witness_script, bob_recv['priv_key'])
+bob_sig = sign_tx(bob_tx, 0, total_value, witness_script, bob_claim['priv_key'])
 bob_tx['vin'][0]['witness'] = [
   bob_sig,
-  'ab' * 31 + 'ac', 
-  0, 
+  bob_claim['pub_key'], 
+  alice_lock['pub_key'],
   witness_script
 ]
 
