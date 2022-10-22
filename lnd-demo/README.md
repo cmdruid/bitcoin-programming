@@ -13,7 +13,7 @@ Basic demo of the LND software.
 ./lncli --network regtest --macaroonpath /PATH/TO/ADMIN/MACAROON getinfo
 
 ## Get macaroon hex
-cat /PATH/TO/MACAROON | xxd -ps -u -c 1000
+
 ```
 
 ## Setting up two LND instances.
@@ -55,6 +55,14 @@ cat /PATH/TO/MACAROON | xxd -ps -u -c 1000
 ./alice/lcli channelbalance
 # Check Bob channel balance.
 ./bob/lcli channelbalance
+```
+
+## Open a public endpoint.
+```bash
+# Open an endpoint to Alice's node (using REST).
+ngrok http https://127.0.0.1:8080
+# Dump contents of your admin macaroon (in hex).
+cat /PATH/TO/MACAROON | xxd -ps -u -c 1000
 ```
 
 ## Resources
