@@ -1,6 +1,17 @@
 # LND Software Demo
 Basic demo of the LND software.
 
+## Configuring Bitcoin Core.
+Make sure your bitcoin.conf includes the following configurations:
+```conf
+## Add these configurations.
+regtest=1
+server=1
+daemon=1
+zmqpubrawblock=tcp://127.0.0.1:28332
+zmqpubrawtx=tcp://127.0.0.1:28333
+```
+
 ## Startup up LND
 ```bash
 ## Starting LND from scratch (with bitcoind running in regtest)
