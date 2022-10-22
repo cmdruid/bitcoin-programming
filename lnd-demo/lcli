@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+MACAROON_PATH="$(pwd)/data/chain/bitcoin/regtest/admin.macaroon"
+DEFAULT_CONF="--network regtest --macaroonpath $MACAROON_PATH"
+./lncli $DEFAULT_CONF $@
