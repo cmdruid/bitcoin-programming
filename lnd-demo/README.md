@@ -16,6 +16,22 @@ Basic demo of the LND software.
 cat /PATH/TO/MACAROON | xxd -ps -u -c 1000
 ```
 
+## Setting up two LND instances.
+```bash
+# Start Alice node.
+./alice/lnd --configfile=lnd.conf
+# Setup wallet for Alice
+./alice/lcli create
+# Get a funding address for Alice.
+./alice/lcli newaddress p2wkh
+# Start Alice node.
+./bob/lnd --configfile=lnd.conf
+# Setup wallet for Alice
+./bob/lcli create
+# Get a funding address for Alice.
+./bob/lcli newaddress p2wkh
+```
+
 ## Resources
 **LND Documentation**  
 https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md
