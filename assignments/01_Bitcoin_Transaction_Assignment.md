@@ -12,6 +12,12 @@ The purpose of this assignment is to demonstrate that you can construct a valid 
 
 You will find some examples of how to construct a transaction in the `examples` folder, and references to past lectures in the `slides` folder in this repository.
 
+## Project Templates
+
+**Satoshi Workbench**  
+A docker workbench environment, pre-configured for running bitcoind.  
+https://github.com/cmdruid/satoshi-workbench
+
 ## Resources
 
 **Bitcoin Testnet Faucet**  

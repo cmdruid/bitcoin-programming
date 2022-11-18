@@ -62,6 +62,19 @@ Yes! Please use the *Bitcoin Engineers* discord server to ask questions and sche
 
 All homework, plus the final project is due by the final class at the end of the semester (December 12th). If you forsee any issues with meeting this deadline, please reach out to us on the discord server.
 
+## Project Templates
+
+**Satoshi Workbench**  
+A docker workbench environment, pre-configured for running bitcoind.  
+https://github.com/cmdruid/satoshi-workbench
+
+**Neutrino Workbench**  
+A docker workbench environment, pre-configured for running LND in neutrino mode.  
+https://github.com/cmdruid/neutrino-workbench
+
+**Sauron Workbench**  
+A docker workbench environment, pre-configured for running Core Lightning using Blockstream API.  
+https://github.com/cmdruid/saurons-workbench
 
 ## Resources
 

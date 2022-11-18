@@ -17,6 +17,15 @@ This payment should take place on the Bitcoin Testnet network. It should be publ
 
 You will find some examples of how to start a lightning node in the `lnd-demo` folder. Feel free to use any software implementation of Lightning, such as LND, Core Lightning, Eclair, etc.
 
+**Neutrino Workbench**  
+A docker workbench environment, pre-configured for running LND in neutrino mode.  
+https://github.com/cmdruid/neutrino-workbench
+
+**Sauron Workbench**  
+A docker workbench environment, pre-configured for running Core Lightning using Blockstream API.  
+https://github.com/cmdruid/saurons-workbench
+
+
 ## Resources
 
 **Lightning Network Daemon (LND)**  
