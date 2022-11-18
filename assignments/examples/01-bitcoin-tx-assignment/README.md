@@ -11,8 +11,8 @@ txid: b6e3146bb780e9ffc203ffecaec33da8a67297c2769c73aaee9af66d25f7d14e
 link: [mempool.space](https://mempool.space/testnet/tx/b6e3146bb780e9ffc203ffecaec33da8a67297c2769c73aaee9af66d25f7d14e)
 
 **Redeem Transaction**  
-txid: b6e3146bb780e9ffc203ffecaec33da8a67297c2769c73aaee9af66d25f7d14e  
-link: [mempool.space](https://mempool.space/testnet/tx/0046762f3972e464a679b6fea1b0df4fde82df9aad060bc5b202dda07b900243)
+txid: d6d385398b31a1e41ccd4a91c709c7308218c22f0dc2057446a690cbd140e671  
+link: [mempool.space](https://mempool.space/testnet/tx/d6d385398b31a1e41ccd4a91c709c7308218c22f0dc2057446a690cbd140e671)
 
 ## Transaction Details
 
