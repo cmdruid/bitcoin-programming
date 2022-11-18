@@ -4,7 +4,7 @@ The purpose of this assignment is to demonstrate that you can construct a valid 
 
 ## Requirements
 
-* A document or script within your repository, which shows your work in both constructing, and broadcasting the transaction.
+* A summary of your work in constructing and broadcasting the transaction. If you used a script or program to send the transaction, please include that as well.
 
 * The transaction ID of the Bitcoin transaction, on the Bitcoin Testnet network. It should be publicly viewable on a Blockchain explorer, such as [mempool.space](https://mempool.space/testnet).
 

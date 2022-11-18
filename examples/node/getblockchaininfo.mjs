@@ -1,7 +1,5 @@
-import jsonRpc from './nodelib/json-rpc.mjs'
+import rpc from './lib/rpc.mjs'
 
-const { result, error } = await jsonRpc('getblockchaininfo')
-
-if (error) throw error
+const result = await rpc('getblockchaininfo')
 
 console.log(result)

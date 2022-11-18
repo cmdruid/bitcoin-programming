@@ -14,17 +14,18 @@ from lib.encoder import encode_tx, encode_script
 from lib.helper import decode_address, hash_script, get_txid
 from lib.rpc import RpcSocket
 
-## Replace this with your own bech32 address.
-send_address = 'bcrt1qgl0gmk0ljucd90m0qa42qstaakl9lkdnhdxzq9'
-change_address = 'bcrt1q6clg0q407cw39s55w90uevtxhccaqujsjkf456'
+## Our secret code.
+secretcode = 'superisatestnet'.encode('utf8')
 
-## We decode the address into the witness version and program script.
-send_version, program = decode_address(send_address)
-change_version, program = decode_address(change_address)
-
-## Setup our RPC socket.
+## Setup our RPC socket connection.
 rpc = RpcSocket({ 'wallet': 'regtest' })
+
+## Select the first utxo we have available.
 utxo = rpc.get_utxo(0)
+
+## Generate some new addresses.
+send_address   = rpc.call('getnewaddress')
+change_address = rpc.call('getnewaddress')
 
 ## The initial spending transaction. This tx spends a previous utxo,
 ## and commits the funds to our P2WPKH transaction.
@@ -47,16 +48,18 @@ locking_tx = {
             'script_pubkey': decode_address(change_address)
         },
         {
-            'value': 100,
-            'script_pubkey': [ 'OP_RETURN', 'superisatestnet'.encode('utf8') ]
+            'value': 0,
+            'script_pubkey': [ 'OP_RETURN', secretcode ]
         }
     ],
     'locktime': 0
 }
 
+## Encode our transaction, then hash it to get the txid.
 locking_hex  = encode_tx(locking_tx)
 locking_txid = hash256(bytes.fromhex(locking_hex))[::-1].hex()
 
+## Sign our transaction.
 signature = sign_tx(
   locking_tx,
   utxo['vout'],
@@ -65,8 +68,9 @@ signature = sign_tx(
   utxo['priv_key']
 )
 
+## Append our signature and public key to the witness field.
 locking_tx['vin'][0]['witness'] = [ signature, utxo['pub_key'] ]
 
-## Since we have the complete transaction, we can calculate the transaction ID.
+## Here is our completed transaction.
 print('\nTxid:\n' + locking_txid)
 print('\nHex:\n' + encode_tx(locking_tx))

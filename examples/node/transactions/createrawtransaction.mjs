@@ -5,15 +5,13 @@
  * package from npm via the command 'npm install -g node-fetch'
  */
 
-import rpc from '../nodelib/rpc.mjs'
+import rpc from '../lib/rpc.mjs'
 
 // Specify the name of the existing wallet you wish to use.
-const walletName = 'master'
+const walletName = 'regtest'
 
 // List the unspent transaction outputs (UTXOs) available for you to use.
 const unspent = await rpc('listunspent', [], { wallet: walletName })
-
-console.log('Unspent UTXOs:', unspent)
 
 // Specify the TXID and output for the tranasction you wish to use for funds.
 const txInputs  = [

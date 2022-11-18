@@ -4,9 +4,14 @@ The purpose of this assignment is to demonstrate that you can start a lightning 
 
 ## Requirements
 
-* A document or script within your repository, which shows your work in setting up a lightning node, opening a channel, sending a payment, and closing the channel.
+* A summary of your work in setting up a lightning channel, making an HTLC payment, then closing the channel. If you used a script to open the channel, or make a payment, please include that as well.
 
-* The transaction ID of the lightning "channel" transaction, on the Bitcoin Testnet network. It should be publicly viewable on a Blockchain explorer, such as [mempool.space](https://mempool.space/testnet).
+* Please provide the following information:
+  - The transaction ID of the open channel transaction.
+  - The encoded bolt11 invoice of the payment (starts with lntb).
+  - The transaction ID the the close channel transaction.
+
+This payment should take place on the Bitcoin Testnet network. It should be publicly viewable on a Blockchain explorer, such as [mempool.space](https://mempool.space/testnet).
 
 ## Examples
 
