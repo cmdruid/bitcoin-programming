@@ -93,6 +93,33 @@ lncli connect 158.69.210.216:19735          # LND.
 lightning-cli connect 158.69.210.216:19737  # Core Lightning.
 ```
 
+## Hosting Bitcoin on a Server
+
+If you would like to setup a light-weight Bitcoin Core node running on minimal hardware (like a cheap VPS), try using the following configuration:
+
+```conf
+## Main Config
+server = 1
+
+## Optimization
+prune           = 2000  ## Prune the blockchain size to 2GB max.
+blocksonly      = 1     ## Disables the mempool entirely.
+dbcache         = 50    ## Limit the space used for the database cache.
+maxorphantx     = 10    ## Limit the number of orphan transactions stored.
+maxmempool      = 100   ## Limit the size of your local mempool.
+maxsigcachesize = 4     ## Limit the space used for the signature cache.
+maxconnections  = 32    ## Limit the number of connections to your node.
+
+## Network Config
+# banscore = 1
+blockfilterindex = 1    ## Support light-clients that request block data.
+peerblockfilters = 1    ## Support light-clients that request block data.
+
+## ZMQ Config
+zmqpubrawblock = tcp://0.0.0.0:28332
+zmqpubrawtx    = tcp://0.0.0.0:28333
+```
+
 ## Resources
 
 **Polar: One-click Lightning Network**  
