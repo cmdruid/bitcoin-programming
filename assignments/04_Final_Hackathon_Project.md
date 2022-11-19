@@ -76,6 +76,10 @@ https://github.com/cmdruid/neutrino-workbench
 A docker workbench environment, pre-configured for running Core Lightning using Blockstream API.  
 https://github.com/cmdruid/saurons-workbench
 
+**Regtest Workbench**  
+Spin up a multi-node environent plus a full suite of development tools. Prototype and deploy your next project with lightning speed!  
+https://github.com/cmdruid/regtest-workbench
+
 ## Resources
 
 **Polar: One-click Lightning Network**  
