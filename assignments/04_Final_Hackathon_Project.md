@@ -122,6 +122,9 @@ zmqpubrawtx    = tcp://0.0.0.0:28333
 
 ## Resources
 
+**LND API Documentation**  
+https://api.lightning.community
+
 **Polar: One-click Lightning Network**  
 https://github.com/jamaljsr/polar
 
