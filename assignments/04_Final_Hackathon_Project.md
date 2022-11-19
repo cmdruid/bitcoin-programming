@@ -80,6 +80,19 @@ https://github.com/cmdruid/saurons-workbench
 Spin up a multi-node environent plus a full suite of development tools. Prototype and deploy your next project with lightning speed!  
 https://github.com/cmdruid/regtest-workbench
 
+## Demo Server
+
+There is a public-facing server with Bitcoin and Lightning nodes available for you to peer with.
+
+```sh
+# Bitcoin Node
+addnode http://158.69.210.216:18333 add
+
+# Lightning Node
+lncli connect 158.69.210.216:19735          # LND.
+lightning-cli connect 158.69.210.216:19737  # Core Lightning.
+```
+
 ## Resources
 
 **Polar: One-click Lightning Network**  
