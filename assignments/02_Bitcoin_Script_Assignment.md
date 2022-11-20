@@ -5,14 +5,11 @@ The purpose of this assignment is to demonstrate that you can construct a valid 
 ## Requirements
 
 * A document within your repository, which shows the contents of your Bitcoin script, and the valid output.
-
 * A valid Bitcoin Script, which evaluates to *true* on [https://ide.scriptwiz.app](https://ide.scriptwiz.app).
 
-## Examples
+You can view an example homework submission in the `examples` folder located [here](examples/02-bitcoin-script-assignment/README.md).
 
-You will find some examples of how to construct a transaction in the `examples` folder, and references to past lectures in the `slides` folder in this repository.
-
-## Resources
+## More Resources
 
 **Scriptwiz Bitcoin Script IDE**  
 https://ide.scriptwiz.app

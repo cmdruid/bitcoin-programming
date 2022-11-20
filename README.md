@@ -1,177 +1,71 @@
 # bitcoin-programming
-An educational repository on programming with Bitcoin.
 
-## Resources
+An educational repository on programming with the Bitcoin protocol. 
 
-**Bitcoin: A Peer-to-Peer Electronic Cash System**  
-The original white-paper published by Satoshi Nakamoto.  
-https://bitcoin.org/bitcoin.pdf  
+## Main Index
 
-**Bitcoiner.guide**  
-Comprehensive list of guides, covering may different topics.  
-https://bitcoiner.guide  
+Below is an overview of the directories in this repository.
 
-**Bitcoin Improvement Proposals (BIPs)**  
-A list of proposals to update the various operating standards within Bitcoin.  
-https://github.com/bitcoin/bips  
+```sh
+/assignments  # Here you will find a list of issued homework assignments, 
+              # with examples on how to submit them.
 
-**Bitcoin.org Resources**  
-A list of resource links, curated and provided by bitcoin.org.  
-https://bitcoin.org/en/resources  
+/contrib      # A repository of code examples and demos that you can 
+              # reference (and use!) when making your own projects.
 
-**Bitcoin.it Wiki**  
-A wiki page dedicated to Bitcoin information.  
-https://en.bitcoin.it  
+/papers       # Contains a repository of notable papers to read,
+              # in regards to Bitcoin.
 
-## Repositories
+/resources    # Contains a large repository of links that covers many 
+              # different subject categories.
 
-**Bitcoin Core**  
-The Bitcoin Core reference client, written in C++.  
-https://github.com/bitcoin/bitcoin
+/slides       # Contains presentation slides for you to reference,
+              # in both .ods and .pdf format.
+```
 
-**Btcd**  
-An alternative full node bitcoin implementation written in Go (golang).  
-https://github.com/btcsuite/btcd  
+## Resource Links
 
-**Bcoin**
-Javascript bitcoin library for node.js and browsers.  
-https://github.com/bcoin-org/bcoin  
+There is a large collection of links and resources available, organized by category. Feel free to navigate through them using the table below.
 
-## Running a Node
+| Category                                              | Short description                                                                           |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [Main (start here)](resources/main.md)                | Introduction to the Bitcoin protocol.                                                       |
+| [Repositories](resources/repos.md)                    | Links to the repositories of important Bitcoin projects.                                    |
+| [Runninng a Node](resources/run-a-node.md)            | Many useful links on how to run your own Bitcoin node.                                      |
+| [Using the RPC Interface](resources/rpc-interface.md) | Info and guides on how to use Bitcoin's RPC interface.                                      |
+| [Block Explorers](resources/block-explorers.md)       | List of explorers for viewing transaction history on the blockchain.                        |
+| [Chain Statistics](resources/block-stats.md)          | Fun and interesting statistics regarding the blockchain.                                    |
+| [External APIs](resources/external-apis.md)           | External APIs that you can use to interact with the blockchain.                             |
+| [Cryptography Demos](resources/crypto-demos.md)       | Useful demos and examples of cryptography that Bitcoin uses.                                |
+| [Programming Libraries](resources/libraries.md)       | Programming libraries that simplify programming on Bitcoin.                                 |
+| [Books and Lectures](resources/books-and-vids.md)     | Important books and lectures that teach programming on Bitcoin.                             |
+| [News & Discussion](resources/news-sources.md)        | Places to read and catch up on the latest news in Bitcoin development.                      |
+| [Misc. Links](resources/other.md)                     | Repository for miscellaneous links regarding Bitcoin.                                       |
 
-**Bitcoin Full-Node Guide**  
-A comprehensive guide on installing and setting up Bitcoin Core.  
-https://bitcoin.org/en/full-node  
+## Project Templates
 
-**Download Bitcoin Core**  
-Downloads are available for many platforms.  
-https://bitcoin.org/en/download  
+There are a number of pre-configured docker environments available for you use in your projects. Please check them out below.
 
-**Bitcoin Core Config Generator**  
-Create and explore the many available options of a Bitcoin config file.  
-https://jlopp.github.io/bitcoin-core-config-generator
+**Satoshi Workbench**  
+A docker workbench environment, pre-configured for running bitcoind.  
+https://github.com/cmdruid/satoshi-workbench
 
-**Bitcoin Core RPCAuth String Generator** 
-Auto-generate an encoded string for rpcauth secure user/password authentication.  
-https://jlopp.github.io/bitcoin-core-rpc-auth-generator  
+**Neutrino Workbench**  
+A docker workbench environment, pre-configured for running LND in neutrino mode.  
+https://github.com/cmdruid/neutrino-workbench
 
-**Understanding the data behind Bitcoin Core**  
-A tutorial that explores the data directory and files used by the Bitcoin core reference client.  
-https://bitcoindev.network/understanding-the-data  
+**Sauron Workbench**  
+A docker workbench environment, pre-configured for running Core Lightning using Blockstream API.  
+https://github.com/cmdruid/saurons-workbench
 
-**Learning Bitcoin from the Command Line**  
-A tutorial for working with Bitcoin (and Lightning).  
-https://github.com/BlockchainCommons/Learning-Bitcoin-from-the-Command-Line  
+**Regtest Workbench**  
+Spin up a multi-node environent plus a full suite of development tools. Prototype and deploy your next project with lightning speed!  
+https://github.com/cmdruid/regtest-workbench
 
-## Bitcoin RPC Interface
+## Contributions
 
-**Standard RPC API Documentation**  
-List of available RPC commands, with documentation.  
-https://developer.bitcoin.org/reference/rpc  
+Feel free to contribute by sending a pull request!
 
-**JSON-RPC API Reference Wiki**  
-Plethora of resources and code examples for communicating with JSON-RPC.  
-https://en.bitcoin.it/wiki/API_reference_(JSON-RPC)  
+## Questions / Issues
 
-## Cryptography Demos
-
-**SHA-256 in Javascript**  
-An example implementation of the SHA-256 hashing algorithm.  
-https://www.movable-type.co.uk/scripts/sha256.html  
-
-**SHA-256 Visualization**  
-A visual representation of how SHA256 mixes data.  
-https://sha256algorithm.com  
-
-**Elliptic Curve Cryptography (ECC) Cipher Suites**  
-Describes key exchange algorithms based on Elliptic Curve Crypto.  
-https://www.rfc-editor.org/rfc/rfc8422  
-
-## Explorers
-
-**Mempool.space**  
-Very pretty and informative blockchain explorer.  
-https://mempool.space  
-
-**Blockstream Explorer**  
-Block explorer web interface based on the esplora API.  
-https://blockstream.info  
-
-**Bitnodes.io**  
-Explore the Bitcoin peer-to-peer network and all of its reachable nodes.  
-https://bitnodes.io  
-
-## Statistics
-
-**Statoshi.info**  
-Grafana-based stats of the Bitcoin blockchain.  
-https://statoshi.info  
-
-**Clark Moody's Bitcoin Dashboard**  
-https://bitcoin.clarkmoody.com/dashboard  
-
-## APIs
-
-**Esplora API**  
-The blockstream.info public RESTful API.
-https://github.com/Blockstream/esplora/blob/master/API.md  
-
-**Blockhooks.io**  
-Dead simple bitcoin transaction notifications.  
-https://blockhooks.io  
-
-## Useful Libraries
-
-**Bitcoin-core JS**  
-Javascript library that connects to Bitcoin Core's RPC interface.  
-https://github.com/ruimarinho/bitcoin-core  
-
-**Bitcoinjs-lib**  
-Javascript library and toolkit with an extensive feature-set.  
-
-**noble-secp256k1**  
-Elliptic-curve library that supports deterministic ECDSA and Schnorr signatures.  
-https://github.com/paulmillr/noble-secp256k1  
-
-## Lectures / Tutorials
-
-**MIT MAS.S62 Cryptocurrency Engineering and Design, Spring 2018**  
-https://www.youtube.com/playlist?list=PLUl4u3cNGP61KHzhg3JIJdK08JLSlcLId  
-
-**MIT 15.S12 Blockchain and Money, Fall 2018**  
-https://www.youtube.com/playlist?list=PLUl4u3cNGP63UUkfL0onkxF6MYgVa04Fn  
-
-## Books
-
-**Mastering Bitcoin**  
-by Andreas M. Antonopoulos
-Released June 2017
-Publishers: O'Reilly Media, Inc.
-ISBN: 9781491954386
-https://github.com/bitcoinbook/bitcoinbook
-
-**Programming Bitcoin**  
-by Jimmy Song
-Released February 2019
-Publishers: O'Reilly Media, Inc.
-ISBN: 9781492031499
-https://github.com/jimmysong/programmingbitcoin
-
-## News and Discussion
-
-**Bitcoin Optech Newsletter**  
-Weekly tech newsletter that discusses active topics within Bitcoin development.  
-https://bitcoinops.org  
-
-**Bitcointalk Forums**  
-Original Bitcoin discussion forum, founded by Theymos and Satoshi Nakamoto.  
-https://bitcointalk.org  
-
-**Bitcoin Developer's Mailing List**  
-https://lists.linuxfoundation.org/mailman/listinfo/bitcoin-dev
-
-## Other
-
-**Satoshi's Bitcointalk Profile**  
-FYI You may need an account to view this page.  
-https://bitcointalk.org/index.php?action=profile;u=3  
+If you see any errors or other issues within this repository and would like to see a correction, please feel free to submit an issue or pull request. If you have any questions, or would otherwise like to get into contact with me, please feel free to submit an issue asking your question, or message me directly on github.

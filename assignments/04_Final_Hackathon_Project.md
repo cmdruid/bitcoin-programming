@@ -62,7 +62,17 @@ Yes! Please use the *Bitcoin Engineers* discord server to ask questions and sche
 
 All homework, plus the final project is due by the final class at the end of the semester (December 12th). If you forsee any issues with meeting this deadline, please reach out to us on the discord server.
 
+## RPC / REST Interface
+
+A great way to build on top of Bitcoin and Lightning is to write programs that use the RPC interface. Check out more information [here](../resources/rpc-interface.md).
+
+## API Resources
+
+Another great way to build on top of Bitcoin and Lightning is to use public APIs. Check out which public APIs are available [here](../resources/rpc-interface.md).
+
 ## Project Templates
+
+There are a number of pre-configured environments available for you use in your projects. Please check them out below.
 
 **Satoshi Workbench**  
 A docker workbench environment, pre-configured for running bitcoind.  
@@ -120,7 +130,11 @@ zmqpubrawblock = tcp://0.0.0.0:28332
 zmqpubrawtx    = tcp://0.0.0.0:28333
 ```
 
-## Resources
+## Legends of Lightning Hackathon
+
+If you are interesting in submitting your project to compete in a currently rtunning hackathon, please check out the [Legends of Lightning Tournament](https://makers.bolt.fun/tournaments/1/overview). The submission deadline is November 24th!
+
+## More Resources
 
 **LND API Documentation**  
 https://api.lightning.community
