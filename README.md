@@ -6,34 +6,13 @@ An educational repository on programming with the Bitcoin protocol.
 
 Below is an overview of the directories in this repository.
 
-```sh
-/assignments  # Here you will find a list of issued homework assignments, 
-              # with examples on how to submit them.
-
-/contrib      # A repository of code examples and demos that you can 
-              # reference (and use!) when making your own projects.
-
-/papers       # Contains a repository of notable papers to read,
-              # in regards to Bitcoin.
-
-/resources    # Contains a large repository of links that covers many 
-              # different subject categories.
-
-/slides       # Contains presentation slides for you to reference,
-              # in both .ods and .pdf format.
-```
-
-# Class Assignments
-
-Below is an overview of assignmets that are due by the end of the semester.
-
-| Assignment                                                         | Example                                                 | Short description                                                                               |
-| ------------------------------------------------------------------ | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| 01 - [Bitcoin Transaction](./01_Bitcoin_Transaction_Assignment.md) | [Link](examples/01-bitcoin-tx-assignment/README.md)     | Send a Bitcoin transaction to another address, using the Testnet blockchain.                    |
-| 02 - [Bitcoin Script](./02_Bitcoin_Script_Assignment.md)           | [Link](examples/02-bitcoin-script-assignment/README.md) | Create a Bitcoin Script (using ScriptWiz) that evaluates to True.                               |
-| 03 - [Lightning Payment](./03_Lightning_Payment_Assignment.md)     | [Link](examples/03-ln-payment-assignment/README.md)     | Open a Lightning Channel between two nodes, send a payment, then close the channel (on testnet) |
-| 04 - [Final Hackathon Project](./04_Final_Hackathon_Project.md)    |                                                         | Create a project that uses Bitcoin and/or Lightning in some form (and have fun!)                |
-
+| Directory                   | Description                                                                                              |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- |
+| [/assignments](assignments) | Here you will find a list of issued homework assignments, with examples on how to submit them.           |
+| [/contrib](contrib)         | A repository of code examples and demos that you can reference (and use!) when making your own projects. |
+| [/papers](papers)           | Contains a repository of notable papers to read in regards to Bitcoin.                                   |
+| [/resources](resources)     | Contains a large repository of links that cover many different subject categories.                       |
+| [/slides](slides)           | Contains presentation slides for you to reference, in both .ods and .pdf format.                         |
 
 ## Resource Links
 
