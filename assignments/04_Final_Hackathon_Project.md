@@ -98,7 +98,7 @@ There is a public-facing server with Bitcoin and Lightning nodes available for y
 
 ```sh
 # Bitcoin Node
-addnode http://158.69.210.216:18333 add
+addnode 158.69.210.216:18333 add
 
 # LND Lightning Node
 lncli connect 02907aae2a7b810d05017b3587f4a4ef2c77961a37f9d80fef2dde06ea575e764e@158.69.210.216:19735
