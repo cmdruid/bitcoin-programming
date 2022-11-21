@@ -3,10 +3,11 @@
 
 ## Confugration Settings.
 RPC_HOST="localhost:10009"
-MACAROON_PATH="$(pwd)/data/chain/bitcoin/regtest/admin.macaroon"
+NETWORK="regtest"
+MACAROON_PATH="$(pwd)/data/chain/bitcoin/$NETWORK/admin.macaroon"
 
 ## Build Configuration String.
-DEFAULT_CONF="--rpcserver $RPC_HOST --macaroonpath $MACAROON_PATH"
+DEFAULT_CONF="--network $NETWORK --rpcserver $RPC_HOST --macaroonpath $MACAROON_PATH"
 
 ## Run LNCLI with config and passed arguments.
-./bin/lncli $DEFAULT_CONF $@
+./lncli $DEFAULT_CONF $@
