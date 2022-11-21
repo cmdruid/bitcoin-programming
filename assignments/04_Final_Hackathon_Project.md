@@ -64,11 +64,13 @@ All homework, plus the final project is due by the final class at the end of the
 
 ## RPC / REST Interface
 
-A great way to build on top of Bitcoin and Lightning is to write programs that use the RPC interface. Check out more information [here](../resources/rpc-interface.md).
+A great way to build on top of Bitcoin and Lightning is to write programs that use the RPC interface. Check out an example of how to make RPC calls in the [slide presentation here](../slides/bitcoin-transactions-workshop.pdf). There is sample code on how to make API calls to Bitcoin Core [located here](../contrib/python/lib/rpc.py).
+
+You can find more information on how to use the RPC interface for Bitcoin (and for LND) in the [resources listed here](../resources/rpc-interface.md).
 
 ## API Resources
 
-Another great way to build on top of Bitcoin and Lightning is to use public APIs. Check out which public APIs are available [here](../resources/rpc-interface.md).
+Another great way to build on top of Bitcoin and Lightning is to use publicly available APIs. You can check out a few public APIs that are available in the [resources listed here](../resources/external-apis.md).
 
 ## Project Templates
 
@@ -98,9 +100,11 @@ There is a public-facing server with Bitcoin and Lightning nodes available for y
 # Bitcoin Node
 addnode http://158.69.210.216:18333 add
 
-# Lightning Node
-lncli connect 158.69.210.216:19735          # LND.
-lightning-cli connect 158.69.210.216:19737  # Core Lightning.
+# LND Lightning Node
+lncli connect 02907aae2a7b810d05017b3587f4a4ef2c77961a37f9d80fef2dde06ea575e764e@158.69.210.216:19735
+
+# Core Lightning Node
+lightning-cli connect 021aa5da8369fa83d2d6694e5f84612d2d28cdb8fe42660b77c550b96375a886c0@158.69.210.216:19737
 ```
 
 ## Hosting Bitcoin on a Server
