@@ -1,6 +1,6 @@
 # bitcoin-programming
 
-An educational repository on programming with the Bitcoin protocol. 
+A repository of resources for building on the Bitcoin protocol.
 
 ## Main Index
 
