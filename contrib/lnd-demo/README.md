@@ -2,9 +2,9 @@
 
 This is a basic demo that demonstrates how to setup two lightning nodes using LND, connect them to your Bitcoin Core node, open a channel between them, and send a payment.
 
-The demo requires that you already have Bitcoin Core installed and setup on your machine.
+The demo requires that you already have Bitcoin Core installed and setup on your machine. If using testnet, you will also need to sync with the testnet blockchain.
 
-You may need to replace the `lnd` and `lncli` binaries with a version that is built for your operating system. To download these binaries for other operating systems, please visit the releases page [located here](https://github.com/lightningnetwork/lnd/releases/tag/v0.15.4-beta).
+You may need to replace the existing `lnd` and `lncli` binaries (located in `/alice` and `/bob` respectively) with a version that is built for your operating system. To download the correct binaries for your operating system, please visit the LND releases page [located here](https://github.com/lightningnetwork/lnd/releases/tag/v0.15.4-beta).
 
 ## Setting up Bitcoin Core.
 
@@ -24,46 +24,80 @@ Once configured, startup bitcoin core, either using `bitcoind` for a background 
 
 ## Setting up two LND instances.
 
-By default, this demo is configured to run in regtest mode, and connect to a Bitcoin core node that is installed in the default directory. If you run ainto any issues, and need to make further configurations to your LND nodes, please check out [this guide](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) for installing LND, and [this link](https://github.com/lightningnetwork/lnd/blob/master/sample-lnd.conf) for configuring the lnd.conf file.
+By default, this demo is configured to run in regtest mode, and connect to a Bitcoin Core node that is installed in the default directory. If you need to make further configurations to your LND nodes, please check out [this guide](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) for installing LND, and [this link](https://github.com/lightningnetwork/lnd/blob/master/sample-lnd.conf) for configuring the lnd.conf file.
+
+## Starting your LND node(s)
+
+To start, we will run the `lnd` binary with the `--configfile` flag, and specify the `lnd.conf` file located in the same directory. The LND node will continue to run in the terminal, and provide ouput on its current status.
+
+We will begin with our **Alice** node, located in `/alice`:
 
 ```bash
 # Start Alice node.
-./alice: lnd --configfile=lnd.conf
-# Setup wallet for Alice
-./alice: alice-cli create
-# Get a funding address for Alice.
-./alice: alice-cli newaddress p2wkh
-# If you ever need to unlock the wallet, use this.
-./alice: alice-cli unlock
-
-# Start Bob node.
-./bob: lnd --configfile=lnd.conf
-# Setup wallet for Bob
-./bob: bob-cli create
-# Get a funding address for Bob.
-./bob: bob-cli newaddress p2wkh
-# If you ever need to unlock the wallet, use this.
-./bob: bob-cli unlock
+./alice: lnd --configfile lnd.conf
 ```
 
-## Opening a channel.
+Repeat the same steps for our **Bob** node, located in `/bob`.
+
+## Create a Wallet
+
+The next step is to open a new terminal, so that we can issue commands to our node using the `lncli` binary. Since we are running `lnd` with a few custom configurations, we need to also specify those configurations when running `lncli`.
+
+To make things easier when talking to our **Alice** node, I have included an example `alice-cli` script, which wraps `lncli` and automatically provides the configuration flags that we need. Feel free to open and inspect this script, and make changes to it if needed.
+
+```bash
+# Setup wallet for Alice
+./alice: alice-cli create
+# If you ever need to unlock the wallet, use this.
+./alice: alice-cli unlock
+```
+
+Repeat the same steps for our **Bob** node, located in `/bob`.
+
+## Funding your Node
+
+Before opening a channel with another node, your node will need to aquire some funds. We will generate a bitcoin address from our **Alice** node, then send funds to that address.
+
+```bash
+# Get a funding address for Alice.
+./alice: alice-cli newaddress p2wkh
+```
+
+In order to cover the minimal channel size, plus fees and other costs, you should send about 50,000 sats to your **Alice** node for funding.
+
+If using `regtest`, you can mine blocks to generate funds on Bitcoin Core.
+
+If using `testnet`, you will have to aquire funds from a faucet, then wait for the blockchain to confirm your funds have been transferred. You can use the `walletbalance` command to check funds.
+
+Here is an example faucet that you can use for testnet funds:  
+https://bitcoinfaucet.uo1.net
+
+## Opening a Channel.
+
+In order to open a channel with another node, both nodes have to be reachable on the lightning peer network. Since we are running this demo locally on our machine, there is no peering network available. Therefore, we need to connect to the other node directly.
+
+Also, since we are running **Alice** and **Bob** on the same machine, their default network ports will confict with each other. Therefore, we have set custom peering ports in the `lnd.conf` file to `19735` and `19737` for each node. Feel free to change these settings if nessecary.
+
 ```bash
 # Get pubkey identity of Bob's node.
 ./bob: bob-cli getinfo
 # Have Alice peer with Bob.
-./alice: alice-cli connect bob_pubkey@localhost:9737 # Bob's IP:PeerPort
+./alice: alice-cli connect <bob_pubkey>@localhost:19737
 # Have Alice open a channel with Bob.
-./alice: alice-cli openchannel --node_key=<bob_pubkey> --local_amt=25000
-# Mine a few blocks to confirm the channel transaction.
-bitcoin-cli generatetoaddress 6 <any_payment_address>
+./alice: alice-cli openchannel --node_key <bob_pubkey> --local_amt 25000 --sat_per_byte 1
 ```
 
+The channel open transaction will require a few block confirmations before becoming active. You can check on the status of the channel by using the `pendingchannels` command.
+
 ## Sending a payment to Bob.
+
+Once the channel is active, **Alice** can pay an invoice generated by **Bob**:
+
 ```bash
 # Have Bob generate an invoice.
-./bob: bob-cli addinvoice --amt=1000
+./bob: bob-cli addinvoice --amt 1000
 # Have Alice pay the invoice.
-./alice: alice-cli sendpayment --pay_req=<encoded_invoice>
+./alice: alice-cli sendpayment --pay_req <bob_payment_request>
 # Check Alice channel balance.
 ./alice: alice-cli channelbalance
 # Check Bob channel balance.
@@ -72,7 +106,7 @@ bitcoin-cli generatetoaddress 6 <any_payment_address>
 
 ## Running this demo on other networks (like Testnet)
 
-The above examples and configurations are for connecting to the regtest network. If you would like to run this demo on the testnet network (or mainnet), then you will need to update the following configurations.
+The default demo is configured to run on the regtest network. If you would like to run this demo on the testnet network (or mainnet), then you will need to update the following configurations.
 
 ```sh
 ## In bitcoin.conf
@@ -87,6 +121,10 @@ bitcoind.rpccookie=~/.bitcoin/testnet3/.cookie
 ## In alice-cli and bob-cli:
 NETWORK="testnet"
 ```
+
+## Troubleshooting
+
+If you run into issues with your LND node authenticating with Bitcoin Core, make sure that your `bitcoind.rpccookie` file path is set correctly in `lnd.conf`. This `.cookie` file should be located in your Bitcoin Core data directory, under the directory relative to the chain you are currently running (for example `regtest`). LND uses this file to authenticate its RPC calls with Bitcoin Core.
 
 ## Resources
 **LND Documentation**  
